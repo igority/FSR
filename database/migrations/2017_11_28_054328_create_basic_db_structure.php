@@ -53,6 +53,7 @@ class CreateBasicDbStructure extends Migration
             $table->increments('CsoID');
             $table->string('FirstName', 50)->nullable();
             $table->string('LastName', 50)->nullable();
+            $table->string('Password');
             $table->string('Phone', 50)->nullable();
             $table->string('Email', 50)->unique();
             $table->integer('CsoOrganizationID')->unsigned();
@@ -61,6 +62,7 @@ class CreateBasicDbStructure extends Migration
             $table->boolean('Notifications')->default(0);
             $table->float('Location_x')->nullable();
             $table->float('Location_y')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
 
@@ -73,6 +75,7 @@ class CreateBasicDbStructure extends Migration
             $table->increments('DonorID');
             $table->string('FirstName', 50)->nullable();
             $table->string('LastName', 50)->nullable();
+            $table->string('Password');
             $table->string('Phone', 50)->nullable();
             $table->string('Email', 50)->unique();
             $table->integer('DonorOrganizationID')->unsigned();
@@ -82,6 +85,7 @@ class CreateBasicDbStructure extends Migration
             $table->boolean('Notifications')->default(0);
             $table->float('Location_x')->nullable();
             $table->float('Location_y')->nullable();
+            $table->rememberToken();
             $table->timestamps();
         });
 
