@@ -13,149 +13,146 @@ class CreateBasicDbStructure extends Migration
      */
     public function up()
     {
-        Schema::create('QuantityTypes', function (Blueprint $table) {
-            $table->increments('QuantityTypeID');
-            $table->string('QuantityName', 50)->nullable();
-            $table->string('QuantityDescription')->nullable();
+        Schema::create('quantity_types', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 50)->nullable();
+            $table->string('description')->nullable();
         });
 
-        Schema::create('FoodTypes', function (Blueprint $table) {
-            $table->increments('FoodTypeID');
-            $table->string('FoodTypeName', 50)->nullable();
-            $table->text('Comment')->nullable();
+        Schema::create('food_types', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 50)->nullable();
+            $table->text('comment')->nullable();
         });
 
-        Schema::create('DonorTypes', function (Blueprint $table) {
-            $table->increments('DonorTypeID');
-            $table->string('Name', 50)->nullable();
-            $table->string('Description', 50)->nullable();
+        Schema::create('donor_types', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 50)->nullable();
+            $table->string('description', 50)->nullable();
         });
 
-        Schema::create('CsoOrganizations', function (Blueprint $table) {
-            $table->increments('CsoOrganizationID');
-            $table->string('Name', 50)->nullable();
-            $table->string('Description', 50)->nullable();
+        Schema::create('organizations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 50)->nullable();
+            $table->string('description', 50)->nullable();
+            $table->string('type', 20);
         });
 
-        Schema::create('DonorOrganizations', function (Blueprint $table) {
-            $table->increments('DonorOrganizationID');
-            $table->string('Name', 50)->nullable();
-            $table->string('Description', 50)->nullable();
+        Schema::create('locations', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('name', 50)->nullable();
+            $table->string('description', 50)->nullable();
         });
 
-        Schema::create('Locations', function (Blueprint $table) {
-            $table->increments('LocationID');
-            $table->string('LocationName', 50)->nullable();
-            $table->string('Description', 50)->nullable();
-        });
-
-        Schema::create('Csos', function (Blueprint $table) {
-            $table->increments('CsoID');
-            $table->string('FirstName', 50)->nullable();
-            $table->string('LastName', 50)->nullable();
-            $table->string('Password');
-            $table->string('Phone', 50)->nullable();
-            $table->string('Email', 50)->unique();
-            $table->integer('CsoOrganizationID')->unsigned();
-            $table->integer('LocationID')->unsigned();
-            $table->string('ImageURL')->nullable();
-            $table->boolean('Notifications')->default(0);
-            $table->float('Location_x')->nullable();
-            $table->float('Location_y')->nullable();
+        Schema::create('csos', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('first_name', 50)->nullable();
+            $table->string('last_name', 50)->nullable();
+            $table->string('phone', 50)->nullable();
+            $table->string('address', 255)->nullable();
+            $table->integer('organization_id')->unsigned();
+            $table->integer('location_id')->unsigned();
+            $table->string('image_url')->nullable();
+            $table->boolean('notifications')->default(0);
+            $table->float('location_x')->nullable();
+            $table->float('location_y')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::table('Csos', function (Blueprint $table) {
-            $table->foreign('CsoOrganizationID')->references('CsoOrganizationID')->on('CsoOrganizations');
-            $table->foreign('LocationID')->references('LocationID')->on('Locations');
+        Schema::table('csos', function (Blueprint $table) {
+            $table->foreign('organization_id')->references('id')->on('organizations');
+            $table->foreign('location_id')->references('id')->on('locations');
         });
 
-        Schema::create('Donors', function (Blueprint $table) {
-            $table->increments('DonorID');
-            $table->string('FirstName', 50)->nullable();
-            $table->string('LastName', 50)->nullable();
-            $table->string('Password');
-            $table->string('Phone', 50)->nullable();
-            $table->string('Email', 50)->unique();
-            $table->integer('DonorOrganizationID')->unsigned();
-            $table->integer('DonorTypeID')->unsigned();
-            $table->integer('LocationID')->unsigned();
-            $table->string('ImageURL')->nullable();
-            $table->boolean('Notifications')->default(0);
-            $table->float('Location_x')->nullable();
-            $table->float('Location_y')->nullable();
+        Schema::create('donors', function (Blueprint $table) {
+            $table->increments('id');
+            $table->string('email')->unique();
+            $table->string('password');
+            $table->string('first_name', 50)->nullable();
+            $table->string('last_name', 50)->nullable();
+            $table->string('phone', 50)->nullable();
+            $table->string('address', 255)->nullable();
+            $table->integer('organization_id')->unsigned();
+            $table->integer('donor_type_id')->unsigned();
+            $table->integer('location_id')->unsigned();
+            $table->string('image_url')->nullable();
+            $table->boolean('notifications')->default(0);
+            $table->float('location_x')->nullable();
+            $table->float('location_y')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
 
-        Schema::table('Donors', function (Blueprint $table) {
-            $table->foreign('DonorOrganizationID')->references('DonorOrganizationID')->on('DonorOrganizations');
-            $table->foreign('LocationID')->references('LocationID')->on('Locations');
-            $table->foreign('DonorTypeID')->references('DonorTypeID')->on('DonorTypes');
+        Schema::table('donors', function (Blueprint $table) {
+            $table->foreign('organization_id')->references('id')->on('organizations');
+            $table->foreign('location_id')->references('id')->on('locations');
+            $table->foreign('donor_type_id')->references('id')->on('donor_types');
         });
 
-        Schema::create('Listings', function (Blueprint $table) {
-            $table->increments('ListingID');
-            $table->integer('DonorID')->unsigned();
-            $table->text('Title')->nullable();
-            $table->text('Description')->nullable();
-            $table->integer('FoodTypeID')->unsigned();
-            $table->float('Quantity')->nullable();
-            $table->integer('QuantityTypeID')->unsigned();
-            $table->datetime('DateListed')->nullable();
-            $table->datetime('DateExpires')->nullable();
-            $table->string('ImageURL', 255)->nullable();
-            $table->time('PickupTimeFrom')->nullable();
-            $table->time('PickupTimeTo')->nullable();
-            $table->string('ListingStatus', 50)->nullable();
+        Schema::create('listings', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('donor_id')->unsigned();
+            $table->text('title')->nullable();
+            $table->text('description')->nullable();
+            $table->integer('food_type_id')->unsigned();
+            $table->float('quantity')->nullable();
+            $table->integer('quantity_type_id')->unsigned();
+            $table->datetime('date_listed')->nullable();
+            $table->datetime('date_expires')->nullable();
+            $table->string('image_url', 255)->nullable();
+            $table->time('pickup_time_from')->nullable();
+            $table->time('pickup_time_to')->nullable();
+            $table->string('listing_status', 50)->nullable();
             // $table->datetime('RecurringType');
             // $table->datetime('RecurringWeekly');
             // $table->datetime('RecurringMonthly');
             $table->timestamps();
         });
 
-        Schema::table('Listings', function (Blueprint $table) {
-            $table->foreign('DonorID')->references('DonorID')->on('Donors');
-            $table->foreign('FoodTypeID')->references('FoodTypeID')->on('FoodTypes');
-            $table->foreign('QuantityTypeID')->references('QuantityTypeID')->on('QuantityTypes');
+        Schema::table('listings', function (Blueprint $table) {
+            $table->foreign('donor_id')->references('id')->on('donors');
+            $table->foreign('food_type_id')->references('id')->on('food_types');
+            $table->foreign('quantity_type_id')->references('id')->on('quantity_types');
         });
 
-        Schema::create('ListingOffers', function (Blueprint $table) {
-            $table->increments('ListingOfferID');
-            $table->integer('CsoID')->unsigned();
-            $table->integer('ListingID')->unsigned();
-            $table->string('OfferStatus', 50)->nullable();
-            $table->float('Quantity')->nullable();
-            $table->integer('BeneficiariesNo')->nullable();
-            $table->string('VolunteerPickupName', 50)->nullable();
-            $table->string('VolunteerPickupPhone', 20)->nullable();
+        Schema::create('listing_offers', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('cso_id')->unsigned();
+            $table->integer('listing_id')->unsigned();
+            $table->string('offer_status', 50)->nullable();
+            $table->float('quantity')->nullable();
+            $table->integer('beneficiaries_no')->nullable();
+            $table->string('volunteer_pickup_name', 50)->nullable();
+            $table->string('volunteer_pickup_phone', 20)->nullable();
             $table->timestamps();
         });
 
-        Schema::table('ListingOffers', function (Blueprint $table) {
-            $table->foreign('CsoID')->references('CsoID')->on('Csos');
-            $table->foreign('ListingID')->references('ListingID')->on('Listings');
+        Schema::table('listing_offers', function (Blueprint $table) {
+            $table->foreign('cso_id')->references('id')->on('csos');
+            $table->foreign('listing_id')->references('id')->on('listings');
         });
 
-        Schema::create('ListingMsgs', function (Blueprint $table) {
-            $table->increments('ListingMsgID');
-            $table->integer('ListingOfferID')->unsigned();
-            $table->text('MsgText');
-            $table->string('MsgStatus', 50)->nullable();
-            $table->string('SenderType', 20)->nullable();
-            $table->integer('SenderID')->unsigned();
+        Schema::create('listing_msgs', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('listing_offer_id')->unsigned();
+            $table->text('msg_text');
+            $table->string('msg_status', 50)->nullable();
+            $table->string('sender_type', 20)->nullable();
+            $table->integer('sender_id')->unsigned();
             $table->timestamps();
         });
 
-        Schema::table('ListingMsgs', function (Blueprint $table) {
-            $table->foreign('ListingOfferID')->references('ListingOfferID')->on('ListingOffers');
+        Schema::table('listing_msgs', function (Blueprint $table) {
+            $table->foreign('listing_offer_id')->references('id')->on('listing_offers');
         });
 
-        Schema::create('LoginLog', function (Blueprint $table) {
-            $table->increments('LoginLogID');
-            $table->integer('UserUD')->unsigned();
-            $table->string('UserType', 20);
+        Schema::create('login_log', function (Blueprint $table) {
+            $table->increments('id');
+            $table->integer('user_id')->unsigned();
+            $table->string('user_type', 20);
             $table->timestamps();
         });
     }
@@ -168,40 +165,39 @@ class CreateBasicDbStructure extends Migration
     public function down()
     {
         //drop foreign keys
-        Schema::table('Csos', function (Blueprint $table) {
-            $table->dropForeign(['CsoOrganizationID']);
-            $table->dropForeign(['LocationID']);
+        Schema::table('csos', function (Blueprint $table) {
+            $table->dropForeign(['organization_id']);
+            $table->dropForeign(['location_id']);
         });
-        Schema::table('Donors', function (Blueprint $table) {
-            $table->dropForeign(['DonorOrganizationID']);
-            $table->dropForeign(['LocationID']);
-            $table->dropForeign(['DonorTypeID']);
+        Schema::table('donors', function (Blueprint $table) {
+            $table->dropForeign(['organization_id']);
+            $table->dropForeign(['location_id']);
+            $table->dropForeign(['donor_type_id']);
         });
-        Schema::table('Listings', function (Blueprint $table) {
-            $table->dropForeign(['DonorID']);
-            $table->dropForeign(['FoodTypeID']);
-            $table->dropForeign(['QuantityTypeID']);
+        Schema::table('listings', function (Blueprint $table) {
+            $table->dropForeign(['donor_id']);
+            $table->dropForeign(['food_type_id']);
+            $table->dropForeign(['quantity_type_id']);
         });
-        Schema::table('ListingOffers', function (Blueprint $table) {
-            $table->dropForeign(['CsoID']);
-            $table->dropForeign(['ListingID']);
+        Schema::table('listing_offers', function (Blueprint $table) {
+            $table->dropForeign(['cso_id']);
+            $table->dropForeign(['listing_id']);
         });
-        Schema::table('ListingMsgs', function (Blueprint $table) {
-            $table->dropForeign(['ListingOfferID']);
+        Schema::table('listing_msgs', function (Blueprint $table) {
+            $table->dropForeign(['listing_offer_id']);
         });
 
         //drop tables
-        Schema::dropIfExists('QuantityTypes');
-        Schema::dropIfExists('FoodTypes');
-        Schema::dropIfExists('DonorTypes');
-        Schema::dropIfExists('CsoOrganizations');
-        Schema::dropIfExists('DonorOrganizations');
-        Schema::dropIfExists('Locations');
-        Schema::dropIfExists('Csos');
-        Schema::dropIfExists('Donors');
-        Schema::dropIfExists('Listings');
-        Schema::dropIfExists('ListingOffers');
-        Schema::dropIfExists('ListingMsgs');
-        Schema::dropIfExists('LoginLog');
+        Schema::dropIfExists('quantity_types');
+        Schema::dropIfExists('food_types');
+        Schema::dropIfExists('donor_types');
+        Schema::dropIfExists('organizations');
+        Schema::dropIfExists('locations');
+        Schema::dropIfExists('csos');
+        Schema::dropIfExists('donors');
+        Schema::dropIfExists('listings');
+        Schema::dropIfExists('listing_offers');
+        Schema::dropIfExists('listing_msgs');
+        Schema::dropIfExists('login_log');
     }
 }

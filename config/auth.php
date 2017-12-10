@@ -14,8 +14,8 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
-        'passwords' => 'users',
+        'guard' => 'cso',
+        'passwords' => 'csos',
     ],
 
     /*
@@ -36,15 +36,22 @@ return [
     */
 
     'guards' => [
-        'web' => [
+
+        'cso' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'csos',
+        ],
+
+        'donor' => [
+            'driver' => 'session',
+            'provider' => 'donors',
         ],
 
         'api' => [
             'driver' => 'token',
             'provider' => 'users',
         ],
+
     ],
 
     /*
@@ -65,9 +72,14 @@ return [
     */
 
     'providers' => [
-        'users' => [
+
+        'csos' => [
             'driver' => 'eloquent',
-            'model' => App\User::class,
+            'model' => FSR\Cso::class,
+        ],
+        'donors' => [
+            'driver' => 'eloquent',
+            'model' => FSR\Donor::class,
         ],
 
         // 'users' => [
@@ -92,8 +104,14 @@ return [
     */
 
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+
+        'csos' => [
+            'provider' => 'csos',
+            'table' => 'password_resets',
+            'expire' => 60,
+        ],
+        'donors' => [
+            'provider' => 'donors',
             'table' => 'password_resets',
             'expire' => 60,
         ],

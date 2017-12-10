@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace FSR\Http\Controllers\Auth;
 
-use App\Http\Controllers\Controller;
+use FSR\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\ResetsPasswords;
+use Illuminate\Support\Facades\Auth;
 
 class ResetPasswordController extends Controller
 {
@@ -21,11 +22,25 @@ class ResetPasswordController extends Controller
     use ResetsPasswords;
 
     /**
-     * Where to redirect users after resetting their password.
+     * Where to redirect users after login.
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected function redirectTo()
+    {
+        switch (Auth::user()->type()) {
+        case 'cso':
+            return '/cso/home';
+          break;
+        case 'donor':
+            return '/donor/home';
+          break;
+
+        default:
+        return '/';
+          break;
+      }
+    }
 
     /**
      * Create a new controller instance.

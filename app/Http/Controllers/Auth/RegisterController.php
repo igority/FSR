@@ -1,11 +1,19 @@
 <?php
 
-namespace App\Http\Controllers\Auth;
+namespace FSR\Http\Controllers\Auth;
 
-use App\User;
-use App\Http\Controllers\Controller;
+use FSR\User;
+use FSR\Cso;
+use FSR\Donor;
+use FSR\Location;
+use FSR\DonorType;
+use FSR\Organization;
+use FSR\Http\Controllers\Controller;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -21,13 +29,58 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
+    protected $redirectTo = '/';
+    /**
+     * Show the application registration form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showRegistrationForm()
+    {
+        $selectedType = old('type');
+        if ($selectedType) {
+            $organizations = Organization::where('type', '=', $selectedType)->get();
+        } else {
+            $organizations = Organization::all();
+        }
+
+        $locations = Location::all();
+        $donor_types = DonorType::all();
+        return view('auth.register')->with([
+          'organizations' => $organizations,
+          'locations' => $locations,
+          'donor_types' => $donor_types,
+        ]);
+    }
 
     /**
-     * Where to redirect users after registration.
+     * Handle a registration request for the application.
      *
-     * @var string
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    protected $redirectTo = '/home';
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        event(new Registered($user = $this->create($request->all())));
+        Auth::guard($user->type())->login($user);
+
+        return $this->registered($request, $user)
+                        ?: redirect($this->redirectPath());
+    }
+
+    /**
+     * Retrieve Organizations with ajax to populate the <select> control
+     *
+     * @param  Illuminate\Http\Request $request
+     * @return Collection
+     */
+    public function getOrganizations(Request $request)
+    {
+        return $organizations = Organization::where('type', '=', $request->input('type'))->get();
+    }
+
 
     /**
      * Create a new controller instance.
@@ -47,25 +100,70 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-        ]);
+        $validatorArray = [
+            'type'                  => 'required',
+            'organization'          => 'required',
+            'donor_type'            => '',
+            'location'              => 'required',
+            'email'                 => 'required|string|email|max:255|unique:donors|unique:csos',
+            'password'              => 'required|string|min:6|confirmed',
+        ];
+        if ($data['type'] == 'donor') {
+            $validatorArray['donor_type'] = 'required';
+        }
+        return Validator::make($data, $validatorArray);
     }
 
     /**
      * Create a new user instance after a valid registration.
      *
      * @param  array  $data
-     * @return \App\User
+     * @return \FSR\User
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => bcrypt($data['password']),
-        ]);
+        switch ($data['type']) {
+          case 'donor':
+          $redirectTo = '/donor/home';
+          return  Donor::create([
+                'email' => $data['email'],
+                'password' => bcrypt($data['password']),
+                'first_name' => $data['first_name'],
+                'last_name' => $data['last_name'],
+                'phone' => $data['phone'],
+                'address' => $data['address'],
+                'organization_id' => $data['organization'],
+                'location_id' => $data['location'],
+                'donor_type_id' => $data['donor_type'],
+                'image_url' => $data['image_url'],
+                'notifications' => '1',
+            ]);
+
+          break;
+          case 'cso':
+          $redirectTo = '/cso/home';
+          return  Cso::create([
+              'email' => $data['email'],
+              'password' => bcrypt($data['password']),
+              'first_name' => $data['first_name'],
+              'last_name' => $data['last_name'],
+              'phone' => $data['phone'],
+              'address' => $data['address'],
+              'organization_id' => $data['organization'],
+              'location_id' => $data['location'],
+              'image_url' => $data['image_url'],
+              'notifications' => '1',
+            ]);
+          break;
+
+        default:
+          # code...
+          break;
+      }
+    }
+
+    public function handleUpload(Request $request)
+    {
+        dd($request->all());
     }
 }

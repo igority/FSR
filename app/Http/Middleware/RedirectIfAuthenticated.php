@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Middleware;
+namespace FSR\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
@@ -17,9 +17,14 @@ class RedirectIfAuthenticated
      */
     public function handle($request, Closure $next, $guard = null)
     {
-        if (Auth::guard($guard)->check()) {
-            return redirect('/home');
+        if (Auth::guard('cso')->check()) {
+            return redirect('/cso/home');
+        } elseif (Auth::guard('donor')->check()) {
+            return redirect('/donor/home');
+        } else {
+            //return redirect('/');
         }
+
 
         return $next($request);
     }

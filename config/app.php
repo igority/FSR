@@ -78,7 +78,7 @@ return [
     |
     */
 
-    'locale' => 'en',
+    'locale' => 'mk',
 
     /*
     |--------------------------------------------------------------------------
@@ -171,11 +171,11 @@ return [
         /*
          * Application Service Providers...
          */
-        App\Providers\AppServiceProvider::class,
-        App\Providers\AuthServiceProvider::class,
-        // App\Providers\BroadcastServiceProvider::class,
-        App\Providers\EventServiceProvider::class,
-        App\Providers\RouteServiceProvider::class,
+        FSR\Providers\AppServiceProvider::class,
+        FSR\Providers\AuthServiceProvider::class,
+        // FSR\Providers\BroadcastServiceProvider::class,
+        FSR\Providers\EventServiceProvider::class,
+        FSR\Providers\RouteServiceProvider::class,
 
     ],
 
