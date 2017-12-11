@@ -8,9 +8,11 @@ use FSR\Donor;
 use FSR\Location;
 use FSR\DonorType;
 use FSR\Organization;
+use FSR\File;
 use FSR\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
@@ -63,9 +65,12 @@ class RegisterController extends Controller
     {
         $this->validator($request->all())->validate();
 
-        event(new Registered($user = $this->create($request->all())));
-        Auth::guard($user->type())->login($user);
+        //  DB::transaction(function(Request $request) {
+        $file_id = $this->handleUpload($request);
+        event(new Registered($user = $this->create($request->all(), $file_id)));
+        //  });
 
+        Auth::guard($user->type())->login($user);
         return $this->registered($request, $user)
                         ?: redirect($this->redirectPath());
     }
@@ -107,6 +112,7 @@ class RegisterController extends Controller
             'location'              => 'required',
             'email'                 => 'required|string|email|max:255|unique:donors|unique:csos',
             'password'              => 'required|string|min:6|confirmed',
+            'profile_image'         => 'image|max:2048',
         ];
         if ($data['type'] == 'donor') {
             $validatorArray['donor_type'] = 'required';
@@ -120,7 +126,7 @@ class RegisterController extends Controller
      * @param  array  $data
      * @return \FSR\User
      */
-    protected function create(array $data)
+    protected function create(array $data, $file_id)
     {
         switch ($data['type']) {
           case 'donor':
@@ -135,7 +141,7 @@ class RegisterController extends Controller
                 'organization_id' => $data['organization'],
                 'location_id' => $data['location'],
                 'donor_type_id' => $data['donor_type'],
-                'image_url' => $data['image_url'],
+                'profile_image_id' => $file_id,
                 'notifications' => '1',
             ]);
 
@@ -151,7 +157,7 @@ class RegisterController extends Controller
               'address' => $data['address'],
               'organization_id' => $data['organization'],
               'location_id' => $data['location'],
-              'image_url' => $data['image_url'],
+              'profile_image_id' => $file_id,
               'notifications' => '1',
             ]);
           break;
@@ -162,8 +168,36 @@ class RegisterController extends Controller
       }
     }
 
+    /**
+     * handle the profile image upload.
+     *
+     * @param  Request $request
+     * @return int id of the uploaded image in the Files table
+     */
     public function handleUpload(Request $request)
     {
-        dd($request->all());
+        /*
+        show like this:
+        http://fsr.test/storage/upload/qovEHC3FJ70FEKwWdp202jz2qjwelB8evnTgqrPg.jpeg
+
+        */
+
+        //$id = $this->create($data)->id;
+        if ($request->hasFile('profile_image')) {
+            $path = $request->file('profile_image')->store('public' . config('app.upload_path'));
+            $file_id = File::create([
+                  'path_to_file'  => config('app.upload_path'),
+                  'filename'      => $request->profile_image->hashName(),
+                  'original_name' => $request->file('profile_image')->getClientOriginalName(),
+                  'extension'     => $request->file('profile_image')->getClientOriginalExtension(),
+                  'size'          => Storage::size($path),
+                  'last_modified' => Storage::lastModified($path),
+                  'purpose'       => 'profile_image',
+                  'for_user_type' => $request->all()['type'],
+                  'description'   => 'Profile image for a ' . $request->all()['type'] . ' uploaded when registering.',
+              ])->id;
+
+            return $file_id;
+        }
     }
 }

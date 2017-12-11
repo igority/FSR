@@ -54,7 +54,7 @@ class CreateBasicDbStructure extends Migration
             $table->string('address', 255)->nullable();
             $table->integer('organization_id')->unsigned();
             $table->integer('location_id')->unsigned();
-            $table->string('image_url')->nullable();
+            $table->string('profile_image_id')->nullable();
             $table->boolean('notifications')->default(0);
             $table->float('location_x')->nullable();
             $table->float('location_y')->nullable();
@@ -78,7 +78,7 @@ class CreateBasicDbStructure extends Migration
             $table->integer('organization_id')->unsigned();
             $table->integer('donor_type_id')->unsigned();
             $table->integer('location_id')->unsigned();
-            $table->string('image_url')->nullable();
+            $table->string('profile_image_id')->nullable();
             $table->boolean('notifications')->default(0);
             $table->float('location_x')->nullable();
             $table->float('location_y')->nullable();

@@ -29,9 +29,10 @@ class Cso extends Authenticatable
       'last_name',
       'phone',
       'address',
-      'image_url',
+      'profile_image_id',
       'organization_id',
       'location_id',
+      'notifications',
     ];
 
     /**

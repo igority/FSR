@@ -29,10 +29,11 @@ class Donor extends Authenticatable
       'last_name',
       'phone',
       'address',
-      'image_url',
+      'profile_image_id',
       'organization_id',
       'donor_type_id',
       'location_id',
+      'notifications',
 
     ];
 

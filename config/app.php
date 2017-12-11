@@ -2,6 +2,8 @@
 
 return [
 
+    'upload_path' => env('UPLOAD_PATH', 'public/upload'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Name

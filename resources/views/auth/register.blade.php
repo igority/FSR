@@ -63,14 +63,14 @@
             <hr>
 
 
-            <div class="form-group{{ $errors->has('image_url') ? ' has-error' : '' }}">
-              <label for="image_url" class="col-md-4 control-label">@lang('register.image')</label>
+            <div class="form-group{{ $errors->has('profile_image') ? ' has-error' : '' }}">
+              <label for="profile_image" class="col-md-4 control-label">@lang('register.image')</label>
 
               <div class="col-md-6">
-                <input id="image_url" type="file" class="form-control" name="image_url" value="{{ old('image_url') }}" {{ (!old('type')) ? ' disabled' : '' }}>
-                @if ($errors->has('image_url'))
+                <input id="profile_image" type="file" class="form-control" name="profile_image" value="{{ old('profile_image') }}" {{ (!old('type')) ? ' disabled' : '' }}>
+                @if ($errors->has('profile_image'))
                 <span class="help-block">
-                    <strong>{{ $errors->first('image_url') }}</strong>
+                    <strong>{{ $errors->first('profile_image') }}</strong>
                 </span>
                 @endif
               </div>
