@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>Laravel</title>
+        <title>FSR</title>
 
 
         <!-- Fonts -->
@@ -79,9 +79,12 @@
             @endif
 
             <div class="content">
-                <div class="title m-b-md">
-                    Laravel
-                </div>
+                <h2 class="title m-b-md">
+                    Донирање на храна
+                </h2>
+                <h3 class="subtitle m-b-md">
+                    Ајде Македонија
+                </h3>
 
                 <div class="links">
                     <a href="https://laravel.com/docs">Documentation</a>

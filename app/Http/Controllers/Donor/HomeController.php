@@ -1,10 +1,12 @@
 <?php
 
-namespace FSR\Http\Controllers;
+namespace FSR\Http\Controllers\Donor;
 
+use FSR\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
-class CsoController extends Controller
+class HomeController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -13,7 +15,7 @@ class CsoController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:cso');
+        $this->middleware('auth:donor');
     }
 
     /**
@@ -23,6 +25,7 @@ class CsoController extends Controller
      */
     public function index()
     {
-        return view('cso');
+        //  dump(Auth::user()->type());
+        return view('donor.home');
     }
 }

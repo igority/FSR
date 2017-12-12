@@ -15,8 +15,8 @@
 Route::get('/', 'WelcomeController@index')->name('welcome');
 
 //Home
-Route::get('cso/home', 'CsoController@index')->name('cso');
-Route::get('donor/home', 'DonorController@index')->name('donor');
+Route::get('cso/home', 'Cso\HomeController@index')->name('cso.home');
+Route::get('donor/home', 'Donor\HomeController@index')->name('donor.home');
 
 
 //Auth::routes();

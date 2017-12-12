@@ -4,11 +4,14 @@ namespace FSR\Http\Controllers\Auth;
 
 use FSR\Donor;
 use FSR\Cso;
+use FSR\Custom\Methods;
 use Illuminate\Http\Request;
 use FSR\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Cookie;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -24,6 +27,21 @@ class LoginController extends Controller
     */
 
     use AuthenticatesUsers;
+    /**
+     * Show the application's login form.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function showLoginForm()
+    {
+        if (session('status')) {
+            $status = session('status');
+            Session::forget('status');
+        } else {
+            $status = '';
+        }
+        return view('auth.login')->with('status', $status);
+    }
 
 
 
@@ -43,7 +61,7 @@ class LoginController extends Controller
           break;
 
         default:
-        return '/';
+        return '/login';
           break;
       }
     }
@@ -67,7 +85,6 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $this->validateLogin($request);
-
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
         // the login attempts for this application. We'll key this by the username and
         // the IP address of the client making these requests into this application.
@@ -76,16 +93,32 @@ class LoginController extends Controller
 
             return $this->sendLockoutResponse($request);
         }
+
+
         if ($this->attemptLogin($request, 'cso')) {
-            //Auth::setUser($request);
             Auth::setUser((Auth::guard('cso')->user()));
             return $this->sendLoginResponse($request);
-        } else {
-            if ($this->attemptLogin($request, 'donor')) {
-                Auth::setUser((Auth::guard('donor')->user()));
-                return $this->sendLoginResponse($request);
-            }
         }
+
+        if ($this->attemptLogin($request, 'donor')) {
+            Auth::setUser((Auth::guard('donor')->user()));
+            return $this->sendLoginResponse($request);
+        }
+        /*
+                //if user is donor
+                if (Auth::guard('donor')->user()) {
+                    //check if approved - donor
+                    if (Methods::isUserApproved(Auth::guard('donor')->user())) {
+                        //approved - try to log in
+                        if ($this->attemptLogin($request, 'donor')) {
+                            Auth::setUser((Auth::guard('donor')->user()));
+                            return $this->sendLoginResponse($request);
+                        }
+                    } else {
+                        $request->session()->put('status', Lang::get('login.not_approved'));
+                    }
+                }
+        */
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
@@ -102,8 +135,11 @@ class LoginController extends Controller
      */
     protected function attemptLogin(Request $request, String $guard)
     {
+        $credentials = $this->credentials($request);
+        $credentials['approved'] = '1';
+
         return  Auth::guard($guard)->attempt(
-            $this->credentials($request),
+            $credentials,
             $request->filled('remember')
         );
     }

@@ -8,6 +8,11 @@
                 <div class="panel-heading">@lang('login.login')</div>
 
                 <div class="panel-body">
+                  @if ($status != '')
+                      <div class="alert alert-success">
+                          {{ $status }}
+                      </div>
+                  @endif
                     <form class="form-horizontal" method="POST" action="{{ route('login') }}">
                         {{ csrf_field() }}
 

@@ -6,6 +6,7 @@
  */
 
 require('./bootstrap');
+require('admin-lte');
 
 window.Vue = require('vue');
 
@@ -21,12 +22,7 @@ const app = new Vue({
     el: '#app'
 });
 
-$( document ).ready(function() {
-  //$( "#registerTypeSelect" ).trigger( "change" );
-});
-
-
-
+//register
 $('#register_type_select').on('change', function() {
 
   //enable disable fields

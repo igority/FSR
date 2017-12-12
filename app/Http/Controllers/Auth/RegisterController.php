@@ -12,6 +12,7 @@ use FSR\File;
 use FSR\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
@@ -31,7 +32,7 @@ class RegisterController extends Controller
     */
 
     use RegistersUsers;
-    protected $redirectTo = '/';
+    protected $redirectTo = '/login';
     /**
      * Show the application registration form.
      *
@@ -69,8 +70,8 @@ class RegisterController extends Controller
         $file_id = $this->handleUpload($request);
         event(new Registered($user = $this->create($request->all(), $file_id)));
         //  });
-
-        Auth::guard($user->type())->login($user);
+        $request->session()->put('status', Lang::get('login.not_approved'));
+        //Auth::guard($user->type())->login($user);
         return $this->registered($request, $user)
                         ?: redirect($this->redirectPath());
     }
