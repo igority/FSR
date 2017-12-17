@@ -39,7 +39,7 @@
     <strong>Copyright &copy; 2018 <a href="https://ajdemakedonija.mk">Ајде Македонија</a>.</strong> Сите права се задржани.
   </footer>
 
-@include('layouts.elements.control-sidebar')
+{{-- @include('layouts.elements.control-sidebar') --}}
 
 </div>
 <!-- ./wrapper -->

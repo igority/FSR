@@ -9,6 +9,7 @@ use FSR\Location;
 use FSR\DonorType;
 use FSR\Organization;
 use FSR\File;
+use FSR\Custom\Methods;
 use FSR\Http\Controllers\Controller;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Http\Request;
+use Intervention\Image\ImageManagerStatic as Image;
 
 class RegisterController extends Controller
 {
@@ -185,14 +187,28 @@ class RegisterController extends Controller
 
         //$id = $this->create($data)->id;
         if ($request->hasFile('profile_image')) {
-            $path = $request->file('profile_image')->store('public' . config('app.upload_path'));
+
+              //Methods::fitImage($request);
+            $file = $request->file('profile_image');
+            $filename =$file->hashName();
+
+            $directory_path = storage_path('app/public' . config('app.upload_path'));
+            $file_path = $directory_path . '/' . $filename;
+
+            if (!file_exists($directory_path)) {
+                mkdir($directory_path, 666, true);
+            }
+            $img = Image::make($file);
+            Methods::fitImage($img);
+            $img->save($file_path);
+
             $file_id = File::create([
                   'path_to_file'  => config('app.upload_path'),
-                  'filename'      => $request->profile_image->hashName(),
-                  'original_name' => $request->file('profile_image')->getClientOriginalName(),
-                  'extension'     => $request->file('profile_image')->getClientOriginalExtension(),
-                  'size'          => Storage::size($path),
-                  'last_modified' => Storage::lastModified($path),
+                  'filename'      => $filename,
+                  'original_name' => $file->getClientOriginalName(),
+                  'extension'     => $file->getClientOriginalExtension(),
+                  'size'          => Storage::size('public' . config('app.upload_path') . '/' . $filename),
+                  'last_modified' => Storage::lastModified('public' . config('app.upload_path') . '/' . $filename),
                   'purpose'       => 'profile_image',
                   'for_user_type' => $request->all()['type'],
                   'description'   => 'Profile image for a ' . $request->all()['type'] . ' uploaded when registering.',

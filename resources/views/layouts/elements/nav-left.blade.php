@@ -43,7 +43,7 @@
         </li>
 
         <li>
-          <a href="#">
+          <a href="/{{Auth::user()->type()}}/new_listing">
             <i class="fa fa-plus-circle"></i> <span>Додади нова понуда</span>
             <span class="pull-right-container">
             </span>
@@ -60,7 +60,7 @@
         </li>
 
         <li>
-          <a href="#">
+          <a href="/{{Auth::user()->type()}}/active_listings">
             <i class="fa fa-cutlery"></i> <span>Активни понуди</span>
             <span class="pull-right-container">
             </span>

@@ -102,7 +102,7 @@ class CreateBasicDbStructure extends Migration
             $table->integer('quantity_type_id')->unsigned();
             $table->datetime('date_listed')->nullable();
             $table->datetime('date_expires')->nullable();
-            $table->string('image_url', 255)->nullable();
+            $table->integer('image_id')->nullable()->unsigned();
             $table->time('pickup_time_from')->nullable();
             $table->time('pickup_time_to')->nullable();
             $table->string('listing_status', 50)->nullable();

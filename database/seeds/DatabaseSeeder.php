@@ -22,5 +22,9 @@ class DatabaseSeeder extends Seeder
         $this->call(OrganizationsSeeder::class);
         $this->call(LocationsSeeder::class);
         $this->call(DonorTypesSeeder::class);
+        $this->call(FoodTypesSeeder::class);
+        $this->call(QuantityTypesSeeder::class);
+        $this->call(CsosSeeder::class);
+        $this->call(DonorsSeeder::class);
     }
 }

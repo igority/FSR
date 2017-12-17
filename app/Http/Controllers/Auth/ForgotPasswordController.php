@@ -5,8 +5,11 @@ namespace FSR\Http\Controllers\Auth;
 use FSR\Cso;
 use FSR\Donor;
 use FSR\Http\Controllers\Controller;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Foundation\Auth\SendsPasswordResetEmails;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
 class ForgotPasswordController extends Controller
@@ -58,6 +61,8 @@ class ForgotPasswordController extends Controller
                     : $this->sendResetLinkFailedResponse($request, $response);
     }
 
+
+
     /**
    * Get the broker to be used during password reset.
    *
@@ -65,10 +70,10 @@ class ForgotPasswordController extends Controller
    */
     public function broker($email)
     {
-        if (Cso::where('email', $email)->first()) {
-            return Password::broker('csos');
-        } elseif (Donor::where('email', $email)->first()) {
+        if (Donor::where('email', $email)->first()) {
             return Password::broker('donors');
+        } elseif (Cso::where('email', $email)->first()) {
+            return Password::broker('csos');
         } else {
             return Password::broker();
         }

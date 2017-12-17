@@ -16,6 +16,37 @@ class Donor extends Authenticatable
         return 'donor';
     }
 
+    /**
+     * Get the location for this donor.
+     */
+    public function location()
+    {
+        return $this->belongsTo('FSR\Location');
+    }
+
+    /**
+     * Get the organization for this donor.
+     */
+    public function organization()
+    {
+        return $this->belongsTo('FSR\Organization');
+    }
+
+    /**
+     * Get the donor_type for this donor.
+     */
+    public function donor_type()
+    {
+        return $this->belongsTo('FSR\DonorType');
+    }
+
+    /**
+     * Get the listings for this donor.
+     */
+    public function listings()
+    {
+        return $this->hasMany('FSR\Listing');
+    }
 
     /**
      * The attributes that are mass assignable.

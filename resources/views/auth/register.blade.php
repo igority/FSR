@@ -154,7 +154,7 @@
               <label for="address" class="col-md-4 control-label">@lang('register.address')</label>
 
               <div class="col-md-6">
-                <input id="address" type="tel" class="form-control" name="address" value="{{ old('address') }}" {{ (!old('type')) ? ' disabled' : '' }}>
+                <input id="address" type="text" class="form-control" name="address" value="{{ old('address') }}" {{ (!old('type')) ? ' disabled' : '' }}>
                 @if ($errors->has('address'))
                 <span class="help-block">
                     <strong>{{ $errors->first('address') }}</strong>

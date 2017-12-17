@@ -98,27 +98,11 @@ class LoginController extends Controller
         if ($this->attemptLogin($request, 'cso')) {
             Auth::setUser((Auth::guard('cso')->user()));
             return $this->sendLoginResponse($request);
-        }
-
-        if ($this->attemptLogin($request, 'donor')) {
+        } elseif ($this->attemptLogin($request, 'donor')) {
             Auth::setUser((Auth::guard('donor')->user()));
             return $this->sendLoginResponse($request);
         }
-        /*
-                //if user is donor
-                if (Auth::guard('donor')->user()) {
-                    //check if approved - donor
-                    if (Methods::isUserApproved(Auth::guard('donor')->user())) {
-                        //approved - try to log in
-                        if ($this->attemptLogin($request, 'donor')) {
-                            Auth::setUser((Auth::guard('donor')->user()));
-                            return $this->sendLoginResponse($request);
-                        }
-                    } else {
-                        $request->session()->put('status', Lang::get('login.not_approved'));
-                    }
-                }
-        */
+
         // If the login attempt was unsuccessful we will increment the number of attempts
         // to login and redirect the user back to the login form. Of course, when this
         // user surpasses their maximum number of attempts they will get locked out.
@@ -137,7 +121,6 @@ class LoginController extends Controller
     {
         $credentials = $this->credentials($request);
         $credentials['approved'] = '1';
-
         return  Auth::guard($guard)->attempt(
             $credentials,
             $request->filled('remember')
@@ -152,11 +135,20 @@ class LoginController extends Controller
      */
     public function logout(Request $request)
     {
-        $this->guard()->logout();
+        if (Auth::guard('cso')->user()) {
+            $guard = 'cso';
+        } elseif (Auth::guard('donor')->user()) {
+            $guard = 'donor';
+        }
+        //dd($guard);
 
+        $this->guard($guard)->logout();
         $request->session()->invalidate();
         // Get remember_me cookie name
-        $rememberMeCookie = Auth::getRecallerName();
+        $str_to_replace = explode('_', Auth::getRecallerName())[1];
+
+        $rememberMeCookie = str_replace($str_to_replace, $guard, Auth::getRecallerName());
+
         // Tell Laravel to forget this cookie
         $cookie = Cookie::forget($rememberMeCookie);
 

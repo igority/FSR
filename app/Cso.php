@@ -16,6 +16,30 @@ class Cso extends Authenticatable
         return 'cso';
     }
 
+    /**
+     * Get the location for this cso.
+     */
+    public function location()
+    {
+        return $this->belongsTo('FSR\Location');
+    }
+
+    /**
+     * Get the organization for this cso.
+     */
+    public function organization()
+    {
+        return $this->belongsTo('FSR\Organization');
+    }
+
+    /**
+     * Get the listing_offers for this cso.
+     */
+    public function listing_offers()
+    {
+        return $this->hasMany('FSR\ListingOffer');
+    }
+
 
     /**
      * The attributes that are mass assignable.
