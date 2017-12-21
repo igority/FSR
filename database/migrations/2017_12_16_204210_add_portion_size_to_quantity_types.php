@@ -14,7 +14,7 @@ class AddPortionSizeToQuantityTypes extends Migration
     public function up()
     {
         Schema::table('quantity_types', function (Blueprint $table) {
-            $table->float('portion_size')->nullable();
+            $table->double('portion_size')->nullable();
         });
     }
 

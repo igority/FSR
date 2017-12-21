@@ -25,6 +25,9 @@ class HomeController extends Controller
      */
     public function index()
     {
-        return view('cso.home');
+        //dd(route('cso.accepted_listings'));
+        //return view('cso.home');
+
+        return redirect(route('cso.accepted_listings'));
     }
 }

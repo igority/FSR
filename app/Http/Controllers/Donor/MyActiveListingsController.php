@@ -1,6 +1,6 @@
 <?php
 
-namespace FSR\Http\Controllers\Cso;
+namespace FSR\Http\Controllers\Donor;
 
 use FSR\Listing;
 use FSR\ListingOffer;
@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
-class ActiveListingsController extends Controller
+class MyActiveListingsController extends Controller
 {
     /**
      * Create a new controller instance.
@@ -19,7 +19,7 @@ class ActiveListingsController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:cso');
+        $this->middleware('auth:donor');
     }
 
     /**
@@ -32,28 +32,30 @@ class ActiveListingsController extends Controller
 
         //  $active_listings = Listing::where('listing_status', 'active');
         $active_listings = Listing::where('date_expires', '>', Carbon::now()->format('Y-m-d H:i'))
-                                  ->where('date_listed', '<=', Carbon::now()->format('Y-m-d H:i'))
                                   ->where('listing_status', 'active')
+                                  ->where('donor_id', Auth::user()->id)
+                                  ->withCount('listing_offers')
+                                  ->withCount(['listing_offers' => function ($query) {
+                                      $query->where('offer_status', 'active');
+                                  }])
                                   ->orderBy('date_expires', 'ASC');
 
-        $listing_offers = ListingOffer::where('offer_status', 'active')->get();
-        //$listing_offers = ListingOffer::all();
         $active_listings_no = 0;
         foreach ($active_listings->get() as $active_listing) {
-            $quantity_counter = 0;
-            foreach ($active_listing->listing_offers as $listing_offer) {
-                if ($listing_offer->offer_status == 'active') {
-                    $quantity_counter += $listing_offer->quantity;
-                }
-            }
-            if ($active_listing->quantity > $quantity_counter) {
-                $active_listings_no++;
-            }
+            //     $quantity_counter = 0;
+            //     foreach ($active_listing->listing_offers as $listing_offer) {
+            //         if ($listing_offer->offer_status == 'active') {
+            //             $quantity_counter += $listing_offer->quantity;
+            //         }
+            //     }
+            //     if ($active_listing->quantity > $quantity_counter) {
+            $active_listings_no++;
+            //     }
         }
 
-        return view('cso.active_listings')->with([
+        return view('donor.my_active_listings')->with([
           'active_listings' => $active_listings,
-          'listing_offers' => $listing_offers,
+          // 'listing_offers' => $listing_offers,
           'active_listings_no' => $active_listings_no,
         ]);
     }

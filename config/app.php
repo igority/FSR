@@ -1,7 +1,9 @@
 <?php
+use FSR\Custom\CarbonFix;
 
 return [
 
+    'version' => '0.2',
     'upload_path' => env('UPLOAD_PATH', 'public/upload'),
 
     /*
@@ -15,7 +17,7 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => env('APP_NAME', 'FSR'),
 
     /*
     |--------------------------------------------------------------------------
@@ -200,7 +202,8 @@ return [
         'Blade' => Illuminate\Support\Facades\Blade::class,
         'Broadcast' => Illuminate\Support\Facades\Broadcast::class,
         'Bus' => Illuminate\Support\Facades\Bus::class,
-        'Carbon' => Illuminate\Support\Carbon::class,
+      //  'Carbon' => Illuminate\Support\Carbon::class,
+        'Carbon' => FSR\Custom\CarbonFix::class,
         'Cache' => Illuminate\Support\Facades\Cache::class,
         'Config' => Illuminate\Support\Facades\Config::class,
         'Cookie' => Illuminate\Support\Facades\Cookie::class,

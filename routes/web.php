@@ -35,8 +35,15 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('donor/home', 'Donor\HomeController@index')->name('donor.home');
 Route::get('donor/new_listing', 'Donor\NewListingController@index')->name('donor.new_listing');
 Route::post('donor/new_listing', 'Donor\NewListingController@handle_post');
+Route::get('donor/my_active_listings', 'Donor\MyActiveListingsController@index')->name('donor.my_active_listings');
+Route::post('donor/my_active_listings', 'Donor\MyActiveListingsController@handle_post');
+Route::get('donor/my_accepted_listings', 'Donor\MyAcceptedListingsController@index')->name('donor.my_accepted_listings');
+Route::post('donor/my_accepted_listings', 'Donor\MyAcceptedListingsController@handle_post');
 
 
 //cso routes
 Route::get('cso/home', 'Cso\HomeController@index')->name('cso.home');
 Route::get('cso/active_listings', 'Cso\ActiveListingsController@index')->name('cso.active_listings');
+Route::post('cso/active_listings', 'Cso\ActiveListingsController@handle_post');
+Route::get('cso/accepted_listings', 'Cso\AcceptedListingsController@index')->name('cso.accepted_listings');
+Route::post('cso/accepted_listings', 'Cso\AcceptedListingsController@handle_post');

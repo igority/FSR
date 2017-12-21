@@ -78,15 +78,17 @@ class NewListingController extends Controller
      */
     public function handle_post(Request $request)
     {
-        $validation = validator($request->all());
-        $this->validator($request->all())->validate();
+        $validation = $this->validator($request->all());
+        //$this->validator($request->all())->validate();
         if ($validation->fails()) {
-            redirect(route('donor.new_listing'))->withErrors($validation->errors());
+            return redirect(route('donor.new_listing'))->withErrors($validation->errors())
+                                                     ->withInput();
         }
 
         $file_id = $this->handleUpload($request);
         $listing = $this->create($request->all(), $file_id);
-        return back()->with('status', "Понудата е додадена успешно!");
+        
+        return back()->with('status', "Донацијата е додадена успешно!");
     }
 
     /**

@@ -22,20 +22,29 @@
     <ul class="sidebar-menu" data-widget="tree">
 
 
-      <li>
+      {{-- <li>
         <a href="/{{Auth::user()->type()}}/home">
           <i class="fa fa-dashboard"></i> <span>Почетна</span>
           <span class="pull-right-container">
           </span>
         </a>
-      </li>
+      </li> --}}
 
-      <li class="header">ПОНУДИ</li>
+      <li class="header">ДОНАЦИИ</li>
 
       @if (Auth::user()->type() == 'donor')
         <li>
-          <a href="#">
-            <i class="fa fa-bookmark"></i> <span>Мои понуди</span>
+          <a href="/{{Auth::user()->type()}}/my_active_listings">
+            <i class="fa fa-bookmark"></i> <span>Мои донации</span>
+            <span class="pull-right-container">
+              <small class="label pull-right bg-blue">2</small>
+            </span>
+          </a>
+        </li>
+
+        <li>
+          <a href="/{{Auth::user()->type()}}/my_accepted_listings">
+            <i class="fa fa-bookmark"></i> <span> Прифатени донации</span>
             <span class="pull-right-container">
               <small class="label pull-right bg-blue">2</small>
             </span>
@@ -44,24 +53,22 @@
 
         <li>
           <a href="/{{Auth::user()->type()}}/new_listing">
-            <i class="fa fa-plus-circle"></i> <span>Додади нова понуда</span>
+            <i class="fa fa-plus-circle"></i> <span>Додади нова донација</span>
             <span class="pull-right-container">
             </span>
           </a>
         </li>
       @elseif (Auth::user()->type() == 'cso')
         <li>
-          <a href="#">
-            <i class="fa fa-bookmark"></i> <span>Мои понуди</span>
-            <span class="pull-right-container">
-              <small class="label pull-right bg-blue">2</small>
-            </span>
+          <a href="/{{Auth::user()->type()}}/accepted_listings">
+            <i class="fa fa-bookmark"></i> <span>Прифатени донации</span>
+              @yield('cso_accepted_listings_no')
           </a>
         </li>
 
         <li>
           <a href="/{{Auth::user()->type()}}/active_listings">
-            <i class="fa fa-cutlery"></i> <span>Активни понуди</span>
+            <i class="fa fa-cutlery"></i> <span>Активни донации</span>
             <span class="pull-right-container">
             </span>
           </a>

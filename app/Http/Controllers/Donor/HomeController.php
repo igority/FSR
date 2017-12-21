@@ -25,7 +25,7 @@ class HomeController extends Controller
      */
     public function index()
     {
-        //  dump(Auth::user()->type());
-        return view('donor.home');
+        //  return view('donor.home');
+        return redirect(route('donor.my_active_listings'));
     }
 }

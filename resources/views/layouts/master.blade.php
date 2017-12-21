@@ -34,7 +34,7 @@
 
   <footer class="main-footer">
     <div class="pull-right hidden-xs">
-      <b>Верзија</b> 0.1
+      <b>Верзија</b> {{config('app.version')}}
     </div>
     <strong>Copyright &copy; 2018 <a href="https://ajdemakedonija.mk">Ајде Македонија</a>.</strong> Сите права се задржани.
   </footer>
@@ -44,5 +44,7 @@
 </div>
 <!-- ./wrapper -->
 <script type="text/javascript" src="{{asset('js/app.js')}}"></script>
+<!-- test js, TODO remove when done! -->
+<script type="text/javascript" src="{{asset('js/test.js')}}"></script>
 </body>
 </html>

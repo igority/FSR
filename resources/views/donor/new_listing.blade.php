@@ -5,11 +5,11 @@
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <h1><i class="fa fa-plus-circle"></i>
-      Додади нова понуда
+      Додади нова донација
     </h1>
     <ol class="breadcrumb hidden-sm hidden-xs">
       <li><a href="/{{Auth::user()->type()}}/home"> Донор</a></li>
-      <li><a href="/{{Auth::user()->type()}}/new_listing"><i class="fa fa-plus-circle"></i> Додади нова понуда</a></li>
+      <li><a href="/{{Auth::user()->type()}}/new_listing"><i class="fa fa-plus-circle"></i> Додади нова донација</a></li>
     </ol>
   </section>
 
@@ -114,9 +114,8 @@
               <div class="col-md-6">
                 {{-- <textarea rows="4" form="new_listing_form" id="description" class="form-control" name="description" required >{{ old('description') }}</textarea> --}}
                 <textarea rows="4" form="new_listing_form" id="description" class="form-control"
-                          placeholder="Подетално опишете ја состојбата и типот на храната" name="description" >
-                            {{ old('description') }}
-                </textarea>
+                          placeholder="Подетално опишете ја состојбата и типот на храната"
+                          name="description" >{{ old('description') }}</textarea>
                 @if ($errors->has('description'))
                 <span class="help-block">
                     <strong>{{ $errors->first('description') }}</strong>
@@ -236,7 +235,7 @@
             <div class="form-group row">
               <div class="col-md-6 col-md-offset-6 col-lg-7 col-lg-offset-5">
                 <button type="submit" class="btn btn-primary" >
-                    Внеси нова понуда
+                    Внеси нова донација
                 </button>
               </div>
             </div>

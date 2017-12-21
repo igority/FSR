@@ -20172,6 +20172,11 @@ button.close {
   overflow: auto;
 }
 
+.sidebar-menu .header {
+  font-weight: bold;
+  color: white !important;
+}
+
 .content-header > h1 {
   margin-left: 15px;
 }
@@ -20180,8 +20185,16 @@ button.close {
   margin-bottom: 10px;
 }
 
+.box-error {
+  border: red solid;
+}
+
 .listing-box-header {
   padding-bottom: 0px;
+}
+
+.header-elements-wrapper {
+  font-size: 14px;
 }
 
 .listing-box-body-wrapper {
@@ -20247,5 +20260,24 @@ button.close {
 .listing-input-wrapper input,
 .listing-pickup-volunteer input {
   margin-left: 7px;
+}
+
+/*---- popup -----*/
+
+.popup-element-label {
+  text-align: right;
+}
+
+.popup-info {
+  font-weight: bold;
+  text-align: center;
+}
+
+.popup-element-value {
+  font-weight: bold;
+}
+
+.help-block {
+  font-size: 12px;
 }
 
