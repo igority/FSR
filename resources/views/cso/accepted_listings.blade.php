@@ -198,8 +198,7 @@
             </div>
           </div>
           <div class="modal-footer">
-            {{-- <button type="button" class="btn btn-info" data-dismiss="modal">Прифати</button> --}}
-            <input type="submit" name="update-volunteer-popup" class="btn btn-info" value="Прифати" />
+            <input type="submit" name="update-volunteer-popup" class="btn btn-primary" value="Прифати" />
             <button type="button" class="btn btn-default" data-dismiss="modal">Откажи</button>
           </div>
         </form>
@@ -226,7 +225,6 @@
             </h5>
           </div>
           <div class="modal-footer">
-            {{-- <button type="button" class="btn btn-info" data-dismiss="modal">Прифати</button> --}}
             <input type="submit" name="delete-offer-popup" class="btn btn-danger" value="Избриши" />
             <button type="button" class="btn btn-default" data-dismiss="modal">Откажи</button>
           </div>

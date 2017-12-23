@@ -17,9 +17,7 @@ class ListingOffer extends Model
     'offer_status',
     'quantity',
     'beneficiaries_no',
-    'volunteer_pickup_name',
-    'volunteer_pickup_phone',
-
+    'volunteer_id',
   ];
     /**
      * Get the listing_msgs for this listing_offer.
@@ -43,5 +41,13 @@ class ListingOffer extends Model
     public function listing()
     {
         return $this->belongsTo('FSR\Listing');
+    }
+    
+    /**
+     * Get the location for this cso.
+     */
+    public function volunteer()
+    {
+        return $this->belongsTo('FSR\Volunteer');
     }
 }

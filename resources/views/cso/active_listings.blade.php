@@ -49,18 +49,18 @@
                 <div class="listing-image">
                   {{-- <img src="../img/avatar5.png" /> --}}
                   @if ($active_listing->image_id)
-                    <img class="img-circle" alt="{{$active_listing->food_type->name}}" src="../../storage{{config('app.upload_path') . '/' . FSR\File::find($active_listing->image_id)->filename}}" />
-                  @elseif ($active_listing->food_type->default_image_id)
-                    <img class="img-circle" alt="{{$active_listing->food_type->name}}" src="{{$active_listing->food_type->default_image_id}}" />
+                    <img class="img-circle" alt="{{$active_listing->product->food_type->name}}" src="../../storage{{config('app.upload_path') . '/' . FSR\File::find($active_listing->image_id)->filename}}" />
+                  @elseif ($active_listing->product->food_type->default_image)
+                    <img class="img-circle" alt="{{$active_listing->product->food_type->name}}" src="{{$active_listing->product->food_type->default_image}}" />
                   @else
-                    <img class="img-circle" alt="{{$active_listing->food_type->name}}" src="../img/food_types/food-general.jpg" />
+                    <img class="img-circle" alt="{{$active_listing->product->food_type->name}}" src="../img/food_types/food-general.jpg" />
                   @endif
 
                 </div>
                 <div class="header-wrapper">
                   <div id="listing-title-{{$active_listing->id}}" class="listing-title col-xs-12 panel">
                     <strong>
-                      {{$active_listing->title}}
+                      {{$active_listing->product->name}}
                     </strong>
                   </div>
                   <div class="header-elements-wrapper">
@@ -102,7 +102,7 @@
                   </div>
                   <div class="col-md-3 col-sm-6 listing-food-type ">
                     <span class="col-xs-12">Тип на храна:</span>
-                    <span class="col-xs-12" id="food-type-{{$active_listing->id}}"><strong>{{$active_listing->food_type->name}}</strong></span>
+                    <span class="col-xs-12" id="food-type-{{$active_listing->id}}"><strong>{{$active_listing->product->food_type->name}}</strong></span>
                   </div>
                   <div class="col-md-5 col-sm-12 listing-description">
                     @if ($active_listing->description)
@@ -189,7 +189,7 @@
               </div>
               <div class="box-footer text-center">
                   <button type="button" id="listing-submit-button-{{$active_listing->id}}" name="listing-submit-button-{{$active_listing->id}}"
-                            class="btn btn-info btn-lg listing-submit-button" data-toggle="modal" data-target="#confirm-listing-popup">Внеси</button>
+                            class="btn btn-primary btn-lg listing-submit-button" data-toggle="modal" data-target="#confirm-listing-popup">Внеси</button>
                 </div>
             </div>
 
@@ -281,8 +281,7 @@
 
           </div>
           <div class="modal-footer">
-            {{-- <button type="button" class="btn btn-info" data-dismiss="modal">Прифати</button> --}}
-            <input type="submit" name="submit-listing-popup" class="btn btn-info" value="Прифати" />
+            <input type="submit" name="submit-listing-popup" class="btn btn-primary" value="Прифати" />
             <button type="button" class="btn btn-default" data-dismiss="modal">Откажи</button>
           </div>
         </form>

@@ -29,6 +29,8 @@ class AcceptedListingsController extends Controller
      */
     public function index()
     {
+        //default settings:
+        //  dd(config('default_settings.new_listing_in_location_email'));
 
         //  $active_listings = Listing::where('listing_status', 'active');
         // $active_listings = Listing::where('date_expires', '>', Carbon::now()->format('Y-m-d H:i'))

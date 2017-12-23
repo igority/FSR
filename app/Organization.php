@@ -24,6 +24,14 @@ class Organization extends Model
         return $this->hasMany('FSR\Donor');
     }
 
+    /**
+     * Get the donors for this organization.
+     */
+    public function volunteers()
+    {
+        return $this->hasMany('FSR\Volunteer');
+    }
+
     protected $fillable = [
       'name', 'description', 'type'
   ];

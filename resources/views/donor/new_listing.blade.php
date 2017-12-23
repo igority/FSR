@@ -44,7 +44,7 @@
             <div class="form-group{{ $errors->has('food_type') ? ' has-error' : '' }} row">
               <label for="food_type" class="col-md-2 col-md-offset-2 control-label">Тип на храна</label>
               <div class="col-md-6">
-                <select id="food_type" class="form-control" name="food_type">
+                <select id="food_type_select" class="form-control" name="food_type">
                   <option value="">-- Избери --</option>
                   @foreach ($food_types as $food_type)
                     <option value={{$food_type->id}}{{ (old('food_type') == $food_type->id) ? ' selected' : ''}}>{{$food_type->name}}</option>
@@ -59,17 +59,21 @@
             </div>
 
 
-            <!-- Name -->
-            <div class="form-group{{ $errors->has('title') ? ' has-error' : '' }} row">
-              <label for="title" class="col-md-2 col-md-offset-2 control-label">Каква храна?</label>
+            <!-- Product select -->
+            <div class="form-group{{ $errors->has('product_id') ? ' has-error' : '' }} row">
+              <label for="product_id" class="col-md-2 col-md-offset-2 control-label">Тип на производи</label>
 
               <div class="col-md-6">
-                {{-- <input id="title" type="text" class="form-control" name="title" value="{{ old('title') }}" required > --}}
-                <input id="title" type="text" class="form-control" name="title" value="{{ old('title') }}"
-                      placeholder="На пример: Свежи банани, Млеко, Чорба од зеленчук ... " required >
-                @if ($errors->has('title'))
+                <select id="product_id_select" class="form-control" name="product_id"  {{ (!old('food_type')) ? ' disabled' : '' }}>
+                    <option value="">-- Избери --</option>
+                @foreach ($products as $product)
+                  <option value={{$product->id}}{{ (old('product_id') == $product->id) ? ' selected' : ''}}>{{$product->name}}</option>
+                @endforeach
+              </select>
+
+                @if ($errors->has('product_id'))
                 <span class="help-block">
-                    <strong>{{ $errors->first('title') }}</strong>
+                    <strong>{{ $errors->first('product_id') }}</strong>
                 </span>
                 @endif
               </div>

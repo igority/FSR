@@ -8,6 +8,7 @@
 require('./bootstrap');
 require('./register');
 require('./active_listings');
+require('./new_listing');
 
 require('admin-lte');
 

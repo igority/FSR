@@ -4,15 +4,19 @@ namespace FSR\Http\Controllers\Donor;
 
 use Carbon\Carbon;
 use FSR\File;
+use FSR\Cso;
 use FSR\Listing;
+use FSR\Product;
 use FSR\FoodType;
 use FSR\QuantityType;
 use FSR\Custom\Methods;
+use FSR\Notifications\Donor\NewListing;
 use Illuminate\Http\Request;
 use FSR\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Notification;
 use Intervention\Image\ImageManagerStatic as Image;
 
 class NewListingController extends Controller
@@ -35,12 +39,20 @@ class NewListingController extends Controller
      */
     public function index()
     {
+        $food_type = old('food_type');
+        if ($food_type) {
+            $products = Product::where('food_type_id', $food_type)->get();
+        } else {
+            $products = Product::all();
+        }
+
         $food_types = FoodType::all();
         $quantity_types = QuantityType::all();
         $now = Carbon::now()->format('Y-m-d') . 'T' . Carbon::now()->format('H:i');
         return view('donor.new_listing')->with([
           'quantity_types' => $quantity_types,
           'food_types' => $food_types,
+          'products' => $products,
           'now' => $now,
         ]);
     }
@@ -55,7 +67,7 @@ class NewListingController extends Controller
     {
         $validatorArray = [
             'food_type'         => 'required',
-            'title'             => 'required',
+            'product_id'        => 'required',
             'image'             => 'image|max:2048',
             'quantity'          => 'required|numeric',
             'quantity_type'     => 'required',
@@ -87,7 +99,12 @@ class NewListingController extends Controller
 
         $file_id = $this->handleUpload($request);
         $listing = $this->create($request->all(), $file_id);
-        
+
+        $csos = Cso::where('location_id', Auth::user()->location_id)->get();
+        //     ->where('notifications', 1)->get();
+
+        Notification::send($csos, new NewListing($listing));
+
         return back()->with('status', "Донацијата е додадена успешно!");
     }
 
@@ -101,7 +118,7 @@ class NewListingController extends Controller
     {
         return  Listing::create([
                 'donor_id' => Auth::user()->id,
-                'title' => $data['title'],
+                'product_id' => $data['product_id'],
                 'description' => $data['description'],
                 'food_type_id' => $data['food_type'],
                 'quantity' => $data['quantity'],
@@ -160,6 +177,17 @@ class NewListingController extends Controller
               ])->id;
             return $file_id;
         }
+    }
+
+    /**
+     * Retrieve Products with ajax to populate the <select> control
+     *
+     * @param  Illuminate\Http\Request $request
+     * @return Collection
+     */
+    public function getProducts(Request $request)
+    {
+        return $products = Product::where('food_type_id', $request->input('food_type'))->get();
     }
 
     /**

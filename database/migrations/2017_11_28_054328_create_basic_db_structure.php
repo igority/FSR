@@ -164,6 +164,8 @@ class CreateBasicDbStructure extends Migration
      */
     public function down()
     {
+
+
         //drop foreign keys
         Schema::table('csos', function (Blueprint $table) {
             $table->dropForeign(['organization_id']);

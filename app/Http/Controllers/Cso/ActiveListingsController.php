@@ -5,6 +5,7 @@ namespace FSR\Http\Controllers\Cso;
 use FSR\Listing;
 use FSR\ListingOffer;
 use FSR\Http\Controllers\Controller;
+use FSR\Notifications\Cso\AcceptListing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -75,7 +76,15 @@ class ActiveListingsController extends Controller
             return redirect($route)->withErrors($validation->errors())
                                    ->withInput();
         }
+
+        // $csos = Cso::where('location_id', Auth::user()->location_id)
+        //            ->where('notifications', 1)->get();
+        //
+        // Notification::send($csos, new NewListing($listing));
+
         $listing_offer = $this->create($request->all());
+
+        $listing_offer->listing->donor->notify(new AcceptListing($listing_offer));
         return back()->with('status', "Донацијата е успешно прифатена!");
     }
 

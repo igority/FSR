@@ -35,6 +35,8 @@ Route::post('password/reset', 'Auth\ResetPasswordController@reset');
 Route::get('donor/home', 'Donor\HomeController@index')->name('donor.home');
 Route::get('donor/new_listing', 'Donor\NewListingController@index')->name('donor.new_listing');
 Route::post('donor/new_listing', 'Donor\NewListingController@handle_post');
+  //get products with ajax
+Route::post('donor/new_listing/products', 'Donor\NewListingController@getProducts')->name('donor.new_listing.products');
 Route::get('donor/my_active_listings', 'Donor\MyActiveListingsController@index')->name('donor.my_active_listings');
 Route::post('donor/my_active_listings', 'Donor\MyActiveListingsController@handle_post');
 Route::get('donor/my_accepted_listings', 'Donor\MyAcceptedListingsController@index')->name('donor.my_accepted_listings');

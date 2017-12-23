@@ -18,7 +18,7 @@ class CsosSeeder extends Seeder
           'last_name' => 'Пирковски',
           'phone' => '071234567',
           'address' => 'Женевска 34/6',
-          'organization_id' => '1',
+          'organization_id' => '3',
           'location_id' => '2',
           'profile_image_id' => null,
           'notifications' => '1',

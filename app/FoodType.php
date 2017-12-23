@@ -15,12 +15,11 @@ class FoodType extends Model
     protected $fillable = [
       'name', 'comment', 'default_image'
   ];
-
     /**
-     * Get the listings for this food_type.
+     * Get the products for this food_type.
      */
-    public function listings()
+    public function products()
     {
-        return $this->hasMany('FSR\Listing');
+        return $this->hasMany('FSR\Product');
     }
 }

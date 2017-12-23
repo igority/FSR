@@ -13,9 +13,8 @@ class Listing extends Model
      */
     protected $fillable = [
           'donor_id',
-          'title',
+          'product_id',
           'description',
-          'food_type_id',
           'quantity',
           'quantity_type_id',
           'date_listed',
@@ -34,6 +33,7 @@ class Listing extends Model
         return $this->hasMany('FSR\ListingOffer');
     }
 
+
     /**
      * Get the donor for this listing.
      */
@@ -43,18 +43,18 @@ class Listing extends Model
     }
 
     /**
+     * Get the product for this listing.
+     */
+    public function product()
+    {
+        return $this->belongsTo('FSR\Product');
+    }
+
+    /**
      * Get the quantity_type for this listing.
      */
     public function quantity_type()
     {
         return $this->belongsTo('FSR\QuantityType');
-    }
-
-    /**
-     * Get the food_type for this listing.
-     */
-    public function food_type()
-    {
-        return $this->belongsTo('FSR\FoodType');
     }
 }

@@ -14,7 +14,6 @@ $('.quantity-needed-input').on('input', function() {
 
   var id = this.id.replace('quantity-needed-', '');
   var max_quantity = $('#quantity-offered-' + id).text().split(' ')[0];
-  console.log(max_quantity);
   var isnum = /^\d+$/.test(this.value);
   console.log(this.value);
   if ((this.value != '') && (parseInt(this.value) > max_quantity || !$.isNumeric(this.value))) {
@@ -81,3 +80,11 @@ $('.update-volunteer-button').on('click', function() {
 $('.modal').on('hide.bs.modal', function () {
   $('.input-element-popup').remove();
 })
+
+
+/* On click delete offer (in Accepted Listings) fill the popup with hidden id field */
+$('.delete-offer-button').on('click', function() {
+  var id = this.id.replace("delete-offer-button-", "");
+  /* Fill form with hidden elements  */
+  $( "#delete-offer-form" ).append( "<input class='input-element-popup' type='hidden' name='listing_offer_id' value='" + id  + "'>" );
+});
