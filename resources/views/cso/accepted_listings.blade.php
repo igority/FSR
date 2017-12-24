@@ -45,18 +45,18 @@
                 <div class="listing-image">
                   {{-- <img src="../img/avatar5.png" /> --}}
                   @if ($listing_offer->listing->image_id)
-                    <img class="img-circle" alt="{{$listing_offer->listing->food_type->name}}" src="../../storage{{config('app.upload_path') . '/' . FSR\File::find($listing_offer->listing->image_id)->filename}}" />
-                  @elseif ($listing_offer->listing->food_type->default_image_id)
-                    <img class="img-circle" alt="{{$listing_offer->listing->food_type->name}}" src="{{$listing_offer->listing->food_type->default_image_id}}" />
+                    <img class="img-circle" alt="{{$listing_offer->listing->product->food_type->name}}" src="../../storage{{config('app.upload_path') . '/' . FSR\File::find($listing_offer->listing->image_id)->filename}}" />
+                  @elseif ($listing_offer->listing->product->food_type->default_image_id)
+                    <img class="img-circle" alt="{{$listing_offer->listing->product->food_type->name}}" src="{{$listing_offer->listing->product->food_type->default_image_id}}" />
                   @else
-                    <img class="img-circle" alt="{{$listing_offer->listing->food_type->name}}" src="../img/food_types/food-general.jpg" />
+                    <img class="img-circle" alt="{{$listing_offer->listing->product->food_type->name}}" src="../img/food_types/food-general.jpg" />
                   @endif
 
                 </div>
                 <div class="header-wrapper">
                   <div id="listing-title-{{$listing_offer->id}}" class="listing-title col-xs-12 panel">
                     <strong>
-                      {{$listing_offer->listing->title}}
+                      {{$listing_offer->listing->product->name}}
                     </strong>
                   </div>
                   <div class="header-elements-wrapper">
@@ -98,7 +98,7 @@
                   </div>
                   <div class="col-md-3 col-sm-6 listing-food-type ">
                     <span class="col-xs-12">Тип на храна:</span>
-                    <span class="col-xs-12" id="food-type-{{$listing_offer->id}}"><strong>{{$listing_offer->listing->food_type->name}}</strong></span>
+                    <span class="col-xs-12" id="food-type-{{$listing_offer->id}}"><strong>{{$listing_offer->listing->product->food_type->name}}</strong></span>
                   </div>
                   <div class="col-md-5 col-sm-12 listing-description">
                     @if ($listing_offer->listing->description)
@@ -109,16 +109,17 @@
                 </div>
                 <hr>
                 <div class="row">
+                  <!--
                   <div class="col-md-12 listing-input-wrapper">
                     <div class="panel col-xs-12" style="text-align: center;">Волонтер за подигнување</div>
-                    <div class="col-md-5 form-group {{ ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer_name'))) ? 'has-error' : '' }}">
+                    <div class="col-md-5 form-group {{ ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer'))) ? 'has-error' : '' }}">
                       <label class="col-sm-6" for="pickup-volunteer-name">Име:</label>
                       <span class="col-sm-6">
                         <input type="text" id="pickup-volunteer-name-{{$listing_offer->id}}" name="pickup-volunteer-name"
                                 class="pickup-volunteer-name form-control"
                                 value="{{($listing_offer->id == old('lising_offer_id'))
                                             ? old('volunteer_name')
-                                            : $listing_offer->volunteer_pickup_name }}">
+                                            : $listing_offer->volunteer->first_name . ' ' . $listing_offer->volunteer->last_name }}">
                       </span>
                       @if ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer_name')))
                      <span class="help-block listing-input-help-block pull-right">
@@ -146,6 +147,7 @@
                         class="btn btn-default btn-primary update-volunteer-button"
                         data-toggle="modal" data-target="#update-volunteer-popup" update-volunteer-popup>Промени</button>
                     </div>
+                  -->
                 </div>
               </div>
               <div class="box-footer text-center">

@@ -3,7 +3,7 @@ use FSR\Custom\CarbonFix;
 
 return [
 
-    'version' => '0.21',
+    'version' => '0.22',
     'upload_path' => env('UPLOAD_PATH', 'public/upload'),
 
     /*

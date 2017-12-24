@@ -14,7 +14,6 @@ $('#food_type_select').on('change', function() {
 
   //get the organizations retrieved from the database with ajax
   $.post('new_listing/products', {'food_type': this.value, '_token':$('meta[name="csrf-token"]').attr('content')}, function(data) {
-    console.log(data);
     if (data) {
       //append the other options retrieved from database
       $.each(data,function(key, value) {

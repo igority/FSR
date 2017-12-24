@@ -31789,29 +31789,24 @@ $('.listing-submit-button').on('click', function () {
   var title = $('#listing-title-' + id).text().trim();
   var quantity_number = $('#quantity-needed-' + id).val();
   var quantity_description = $('#quantity-needed-' + id).val() + " " + $('#quantity-type-inside-' + id).text().trim();
-  var beneficiaries = $('#beneficiaries-no-' + id).val();
   var expires_in = $('#expires-in-' + id).text().trim();
   var pickup_time = $('#pickup-time-' + id).text().trim();
   var location = $('#donor-location-' + id).text().trim();
-  var volunteer_name = $('#pickup-volunteer-name-' + id).val();
-  var volunteer_phone = $('#pickup-volunteer-phone-' + id).val();
+  var volunteer_name = $('#pickup-volunteer-' + id + ' option:selected').text();
+  var volunteer_value = $('#pickup-volunteer-' + id + ' option:selected').val();
 
   /* Fill popup for appearence */
   $('#popup-title').text(title);
   $('#popup-quantity-needed-value').text(quantity_description);
-  $('#popup-beneficiaries-no-value').text(beneficiaries);
   $('#popup-expires-in-value').text(expires_in);
   $('#popup-pickup-time-value').text(pickup_time);
   $('#popup-location-value').text(location);
-  $('#popup-volunteer-name-value').text(volunteer_name);
-  $('#popup-volunteer-phone-value').text(volunteer_phone);
+  $('#popup-volunteer-value').text(volunteer_name);
 
   /* Fill form with hidden elements  */
-  $("#listing-confirm-form").append("<input class='input-element-popup' type='hidden' name='listing_id' value='" + id + "'>");
-  $("#listing-confirm-form").append("<input class='input-element-popup' type='hidden' name='quantity' value='" + quantity_number + "'>");
-  $("#listing-confirm-form").append("<input class='input-element-popup' type='hidden' name='beneficiaries' value='" + beneficiaries + "'>");
-  $("#listing-confirm-form").append("<input class='input-element-popup' type='hidden' name='volunteer_name' value='" + volunteer_name + "'>");
-  $("#listing-confirm-form").append("<input class='input-element-popup' type='hidden' name='volunteer_phone' value='" + volunteer_phone + "'>");
+  $("#listing-confirm-form").append("<input class='dynamic-input-element-popup' type='hidden' name='listing_id' value='" + id + "'>");
+  $("#listing-confirm-form").append("<input class='dynamic-input-element-popup' type='hidden' name='quantity' value='" + quantity_number + "'>");
+  $("#listing-confirm-form").append("<input class='dynamic-input-element-popup' type='hidden' name='volunteer' value='" + volunteer_value + "'>");
 });
 /* On click update volunteer (in Accepted Listings) fill in the data in the update-volunteer-popup popup */
 $('.update-volunteer-button').on('click', function () {
@@ -31826,20 +31821,149 @@ $('.update-volunteer-button').on('click', function () {
   $('#popup-volunteer-phone-value').text(volunteer_phone);
 
   /* Fill form with hidden elements  */
-  $("#update-volunteer-form").append("<input class='input-element-popup' type='hidden' name='listing_offer_id' value='" + id + "'>");
-  $("#update-volunteer-form").append("<input class='input-element-popup' type='hidden' name='volunteer_name' value='" + volunteer_name + "'>");
-  $("#update-volunteer-form").append("<input class='input-element-popup' type='hidden' name='volunteer_phone' value='" + volunteer_phone + "'>");
+  $("#update-volunteer-form").append("<input class='dynamic-input-element-popup' type='hidden' name='listing_offer_id' value='" + id + "'>");
+  $("#update-volunteer-form").append("<input class='dynamic-input-element-popup' type='hidden' name='volunteer_name' value='" + volunteer_name + "'>");
+  $("#update-volunteer-form").append("<input class='dynamic-input-element-popup' type='hidden' name='volunteer_phone' value='" + volunteer_phone + "'>");
 });
 //on dismiss, remove all dynamic input elements from popup
 $('.modal').on('hide.bs.modal', function () {
-  $('.input-element-popup').remove();
+  $('.dynamic-input-element-popup').remove();
 });
 
 /* On click delete offer (in Accepted Listings) fill the popup with hidden id field */
 $('.delete-offer-button').on('click', function () {
   var id = this.id.replace("delete-offer-button-", "");
   /* Fill form with hidden elements  */
-  $("#delete-offer-form").append("<input class='input-element-popup' type='hidden' name='listing_offer_id' value='" + id + "'>");
+  $("#delete-offer-form").append("<input class='dynamic-input-element-popup' type='hidden' name='listing_offer_id' value='" + id + "'>");
+});
+
+//pass in the id of the listing caller
+$('.add-volunteer-button').on('click', function () {
+  var id = this.id.replace('add-volunteer-button-', '');
+  $('#add-volunteer-form').append("<input type='hidden' id='popup-listing-id' class='dynamic-input-element-popup' name='listing_id' value='" + id + "'/>");
+});
+
+//submit the form to add volunteer with ajax, show errors if any
+$("#add-volunteer-form").submit(function (e) {
+  e.preventDefault(); // avoid to execute the actual submit of the form.
+  var url = window.location.protocol + '//' + window.location.hostname + '/cso/active_listings/add_volunteer'; // Returns path only
+  fd = new FormData(this);
+  //activate loading animation
+  $('#popup-loading').addClass('fa');
+  $('#popup-loading').addClass('fa-spinner');
+  $('#popup-loading').addClass('fa-pulse');
+  $('#popup-loading').addClass('fa-2x');
+  $('#popup-loading').addClass('fa-fw');
+  $.ajax({
+    headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+    url: url, // Url to which the request is send
+    type: "POST", // Type of request to be send, called as method
+    data: new FormData(this), // Data sent to server, a set of key/value pairs (i.e. form fields and values)
+    contentType: false, // The content type used when sending data to the server.
+    cache: false, // To unable request pages to be cached
+    processData: false, // To send DOMDocument or non processed data file it is set to false
+    success: function success(data) // A function to be called if request succeeds
+    {
+      //disable loading animation
+      $('#popup-loading').removeClass('fa');
+      $('#popup-loading').removeClass('fa-spinner');
+      $('#popup-loading').removeClass('fa-pulse');
+      $('#popup-loading').removeClass('fa-2x');
+      $('#popup-loading').removeClass('fa-fw');
+      if (data.errors) {
+
+        if (data.errors['first_name']) {
+          $('#first-name-form-group').addClass('has-error');
+          $('#first-name-error').text(data.errors['first_name']);
+        } else {
+          $('#first-name-form-group').removeClass('has-error');
+          $('#first-name-error').text('');
+        }
+
+        if (data.errors['last_name']) {
+          $('#last-name-form-group').addClass('has-error');
+          $('#last-name-error').text(data.errors['last_name']);
+        } else {
+          $('#last-name-form-group').removeClass('has-error');
+          $('#last-name-error').text('');
+        }
+
+        if (data.errors['email']) {
+          $('#email-form-group').addClass('has-error');
+          $('#email-error').text(data.errors['email']);
+        } else {
+          $('#email-form-group').removeClass('has-error');
+          $('#email-error').text('');
+        }
+
+        if (data.errors['phone']) {
+          $('#phone-form-group').addClass('has-error');
+          $('#phone-error').text(data.errors['phone']);
+        } else {
+          $('#phone-form-group').removeClass('has-error');
+          $('#phone-error').text('');
+        }
+
+        if (data.errors['image']) {
+          $('#image-form-group').addClass('has-error');
+          $('#image-error').text(data.errors['image']);
+        } else {
+          $('#image-form-group').removeClass('has-error');
+          $('#image-error').text('');
+        }
+      } else {
+        //everything is fine
+
+        //reset the popup
+        $('#first-name-form-group').removeClass('has-error');
+        $('#last-name-form-group').removeClass('has-error');
+        $('#email-form-group').removeClass('has-error');
+        $('#phone-form-group').removeClass('has-error');
+        $('#image-form-group').removeClass('has-error');
+        $('#first-name-error').text('');
+        $('#last-name-error').text('');
+        $('#email-error').text('');
+        $('#phone-error').text('');
+        $('#image-error').text('');
+        $('#first_name').val('');
+        $('#last_name').val('');
+        $('#email').val('');
+        $('#phone').val('');
+        $('#image').val('');
+
+        //retrieve the id
+        var id = $('#popup-listing-id').val();
+
+        //retrieve the volunteers with ajax, and update every select element
+
+        $(".pickup-volunteer-name").each(function (index, obj) {
+          alert('key: ' + index);
+          alert('value: ' + obj.id);
+          $('#' + obj.id).children('option:not(:first)').remove();
+          // var i=0;
+          // while (i < obj.length) {
+          //   if (i != 0) {
+          //     obj.remove(i);
+          //   }
+          //   i++;
+          // }
+
+          //obj.selectmenu('refresh', true);
+          //value.children('option:not(:first)').remove();
+          //  this.children('option:not(:first)').remove();
+          //console.log( index + ": " + $( this ).text() );
+        });
+
+        //dismiss the popup
+        $('#add-volunteer-popup').modal('hide');
+
+        //zatvori popup
+        //resetiraj gi site input elementi vo popupopt
+        //povlechi gi uste ednas volonterite so ajax i napolni go selectot za volonterite
+        //ispishi status so zeleno deka e uspeshno vnesen nov volonter
+      }
+    }
+  });
 });
 
 /***/ }),
@@ -31861,7 +31985,6 @@ $('#food_type_select').on('change', function () {
 
   //get the organizations retrieved from the database with ajax
   $.post('new_listing/products', { 'food_type': this.value, '_token': $('meta[name="csrf-token"]').attr('content') }, function (data) {
-    console.log(data);
     if (data) {
       //append the other options retrieved from database
       $.each(data, function (key, value) {

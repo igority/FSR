@@ -2,6 +2,7 @@
 
 namespace FSR\Notifications\Cso;
 
+use FSR\File;
 use FSR\ListingOffer;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
@@ -43,13 +44,20 @@ class AcceptListing extends Notification
      */
     public function toMail($notifiable)
     {
-        return (new MailMessage)
-                    ->subject('Прифатена донација')
-                    ->line('Вашата донација е прифатена од ' . $this->listing_offer->cso->first_name . ' ' . $this->listing_offer->cso->last_name . ' | ' . $this->listing_offer->cso->organization->name . '.')
-                    ->line('Прифатена количина: ' . (($this->listing_offer->quantity == $this->listing_offer->listing->quantity) ? 'целосна.' : $this->listing_offer->quantity . ' од ' . $this->listing_offer->listing->quantity . ' ' . $this->listing_offer->listing->quantity_type->description))
-                    ->line('Лице за подигнување: ' . $this->listing_offer->volunteer_pickup_name)
-                    ->line('Контакт: ' . $this->listing_offer->volunteer_pickup_phone)
-                    ->action('Повеќе детали', url('/donor/my_accepted_listings/' . $this->listing_offer->id));
+        $message = (new MailMessage)
+                  ->subject('Прифатена донација')
+                  ->line('Вашата донација е прифатена од ' . $this->listing_offer->cso->first_name . ' ' . $this->listing_offer->cso->last_name . ' | ' . $this->listing_offer->cso->organization->name . '.')
+                  ->line('Прифатена количина: ' . (($this->listing_offer->quantity == $this->listing_offer->listing->quantity) ? 'целосна.' : $this->listing_offer->quantity . ' од ' . $this->listing_offer->listing->quantity . ' ' . $this->listing_offer->listing->quantity_type->description))
+                  ->line('Лице за подигнување: ' . $this->listing_offer->volunteer->first_name . ' ' . $this->listing_offer->volunteer->last_name)
+                  ->line('Контакт: ' . $this->listing_offer->volunteer->phone);
+
+        if ($this->listing_offer->volunteer->image_id) {
+            $message->line('<img src="' . url('storage' . config('app.upload_path') . '/' . File::find($this->listing_offer->volunteer->image_id)->filename) . '" alt="Волонтер" />');
+        }
+
+        $message->action('Повеќе детали', url('/donor/my_accepted_listings/' . $this->listing_offer->id));
+
+        return $message;
     }
 
     /**

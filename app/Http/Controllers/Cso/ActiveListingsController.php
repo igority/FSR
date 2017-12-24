@@ -3,13 +3,18 @@
 namespace FSR\Http\Controllers\Cso;
 
 use FSR\Listing;
+use FSR\File;
+use FSR\Volunteer;
 use FSR\ListingOffer;
 use FSR\Http\Controllers\Controller;
 use FSR\Notifications\Cso\AcceptListing;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\ImageManagerStatic as Image;
+use FSR\Custom\Methods;
 
 class ActiveListingsController extends Controller
 {
@@ -52,10 +57,13 @@ class ActiveListingsController extends Controller
             }
         }
 
+        $volunteers = Volunteer::where('organization_id', Auth::user()->organization_id)->get();
+
         return view('cso.active_listings')->with([
           'active_listings' => $active_listings,
           'listing_offers' => $listing_offers,
           'active_listings_no' => $active_listings_no,
+          'volunteers' => $volunteers,
         ]);
     }
 
@@ -101,9 +109,7 @@ class ActiveListingsController extends Controller
                 'listing_id' => $data['listing_id'],
                 'offer_status' => 'active',
                 'quantity' => $data['quantity'],
-                'beneficiaries_no' => $data['beneficiaries'],
-                'volunteer_pickup_name' => $data['volunteer_name'],
-                'volunteer_pickup_phone' => $data['volunteer_phone'],
+                'volunteer_id' => $data['volunteer'],
             ]);
     }
 
@@ -126,10 +132,116 @@ class ActiveListingsController extends Controller
         $validatorArray = [
             'listing_id'         => 'required',
             'quantity'           => 'required|numeric|min:1|max:' . $max_quantity,
-            'beneficiaries'      => 'required|numeric',
-            'volunteer_name'     => 'required',
-            'volunteer_phone'    => 'required',
+            'volunteer'          => 'required',
         ];
+
+        return Validator::make($data, $validatorArray);
+    }
+
+    /**
+     * Handle post request.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function add_volunteer(Request $request)
+    {
+        $validation = $this->validator_volunteer($request->all());
+
+        if ($validation->fails()) {
+            //  return $validation->errors();
+            return response()->json(['errors' => $validation->errors()]);
+        }
+
+        $file_id = $this->handleUploadAjax($request);
+        $volunteer = $this->create_volunteer($request->all(), $file_id);
+
+        //  Notification::send($csos, new NewListing($listing));
+
+        return "ok";
+    }
+
+    /**
+     * handle the profile image upload.
+     *
+     * @param  Request $request
+     * @return int id of the uploaded image in the Files table
+     */
+    public function handleUploadAjax(Request $request)
+    {
+        /*
+        show like this:
+        http://fsr.test/storage/upload/qovEHC3FJ70FEKwWdp202jz2qjwelB8evnTgqrPg.jpeg
+
+        */
+
+        //$id = $this->create($data)->id;
+        if ($request->hasFile('image')) {
+
+              //Methods::fitImage($request);
+            $file = $request->file('image');
+            $filename =$file->hashName();
+
+            $directory_path = storage_path('app/public' . config('app.upload_path'));
+            $file_path = $directory_path . '/' . $filename;
+
+            if (!file_exists($directory_path)) {
+                mkdir($directory_path, 666, true);
+            }
+            $img = Image::make($file);
+            Methods::fitImage($img);
+            $img->save($file_path);
+
+            $file_id = File::create([
+                  'path_to_file'  => config('app.upload_path'),
+                  'filename'      => $filename,
+                  'original_name' => $file->getClientOriginalName(),
+                  'extension'     => $file->getClientOriginalExtension(),
+                  'size'          => Storage::size('public' . config('app.upload_path') . '/' . $filename),
+                  'last_modified' => Storage::lastModified('public' . config('app.upload_path') . '/' . $filename),
+                  'purpose'       => 'volunteer image',
+                  'for_user_type' => 'cso',
+                  'description'   => 'An uploaded image for added volunteer.',
+              ])->id;
+            return $file_id;
+        }
+    }
+
+    /**
+     * Create a new user instance after a valid registration.
+     *
+     * @param  array  $data
+     * @return \FSR\User
+     */
+    protected function create_volunteer(array $data, $file_id)
+    {
+        return  Volunteer::create([
+                    'first_name' =>  $data['first_name'],
+                    'last_name' => $data['last_name'],
+                    'phone' => $data['phone'],
+                    'email' => $data['email'],
+                    'image_id' => $file_id,
+                    'organization_id' => Auth::user()->organization_id,
+                    'added_by_user_id' => Auth::user()->id,
+                ]);
+    }
+
+
+    /**
+     * Get a validator for an incoming registration request.
+     *
+     * @param  array  $data
+     * @return \Illuminate\Contracts\Validation\Validator
+     */
+    protected function validator_volunteer(array $data)
+    {
+        $validatorArray = [
+                    'first_name'        => 'required',
+                    'last_name'         => 'required',
+                    'phone'             => 'required',
+                    'email'             => 'required|string|email|max:255',
+                    'image'             => 'image|max:2048',
+                ];
 
         return Validator::make($data, $validatorArray);
     }

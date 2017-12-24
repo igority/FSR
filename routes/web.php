@@ -47,5 +47,6 @@ Route::post('donor/my_accepted_listings', 'Donor\MyAcceptedListingsController@ha
 Route::get('cso/home', 'Cso\HomeController@index')->name('cso.home');
 Route::get('cso/active_listings', 'Cso\ActiveListingsController@index')->name('cso.active_listings');
 Route::post('cso/active_listings', 'Cso\ActiveListingsController@handle_post');
+Route::post('cso/active_listings/add_volunteer', 'Cso\ActiveListingsController@add_volunteer')->name('cso.active_listings.add_volunteer');
 Route::get('cso/accepted_listings', 'Cso\AcceptedListingsController@index')->name('cso.accepted_listings');
 Route::post('cso/accepted_listings', 'Cso\AcceptedListingsController@handle_post');

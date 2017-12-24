@@ -42,7 +42,7 @@ return [
     'exists'               => 'Избраниот :attribute не е валиден.',
     'file'                 => ':attribute мора да е датотека.',
     'filled'               => 'Полето мора да има вредност.',
-    'image'                => 'The :attribute мора да е слика.',
+    'image'                => 'Фајлот мора да биде слика.',
     'in'                   => 'Избраниот :attribute не е валиден.',
     'in_array'             => 'Полето не постои во :other.',
     'integer'              => ':attribute мора да биде цел број.',

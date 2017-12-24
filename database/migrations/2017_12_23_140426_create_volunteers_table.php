@@ -38,8 +38,9 @@ class CreateVolunteersTable extends Migration
             $table->string('last_name');
             $table->string('email')->nullable();
             $table->string('phone')->nullable();
-            $table->integer('image_id')->unsigned();
+            $table->integer('image_id')->unsigned()->nullable();
             $table->integer('organization_id')->unsigned();
+            $table->integer('added_by_user_id')->unsigned()->nullable();
             $table->timestamps();
         });
 

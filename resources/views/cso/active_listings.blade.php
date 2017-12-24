@@ -131,56 +131,26 @@
                      </span>
                      @endif
                     </div>
-                    <div class="col-xs-12 form-group {{ ((old('listing_id') == $active_listing->id) && ($errors->has('beneficiaries'))) ? 'has-error' : '' }} row">
-                      {{-- <span class="quantity-type-inside">За</span> --}}
-                      <label class="col-sm-6" for="beneficiaries-no">Предвидена за:</label>
-                      <span class="col-sm-6">
-                        <div id="portion-size-{{$active_listing->id}}" class="hidden">{{$active_listing->quantity_type->portion_size}}</div>
-                        <input id="beneficiaries-no-{{$active_listing->id}}" type="number" min="0" max="99999999" step="1"
-                                name="beneficiaries-no" class="form-control beneficiaries-no-input"
-                                value="{{($active_listing->id == old('listing_id'))
-                                            ? old('beneficiaries')
-                                            : (($active_listing->quantity_type->portion_size)
-                                                ? (int)(($active_listing->quantity - $quantity_counter) / $active_listing->quantity_type->portion_size)
-                                                : 0)}}">
-                        <span class="beneficiaries-no-inside">луѓе</span>
-                      </span>
-                      @if ((old('listing_id') == $active_listing->id) && ($errors->has('beneficiaries')))
-                     <span class="help-block listing-input-help-block pull-right">
-                         <strong>{{ $errors->first('beneficiaries') }}</strong>
-                     </span>
-                     @endif
-                    </div>
                   </div>
                   <div class="col-md-6 listing-pickup-volunteer">
                     <div class="panel col-xs-12" style="text-align: center;">Волонтер за подигнување</div>
-                    <div class="col-xs-12 form-group {{ ((old('listing_id') == $active_listing->id) && ($errors->has('volunteer_name'))) ? 'has-error' : '' }} row">
-                      <label class="col-sm-6" for="pickup-volunteer-name">Име:</label>
+                    <div class="col-xs-12 form-group {{ ((old('listing_id') == $active_listing->id) && ($errors->has('volunteer'))) ? 'has-error' : '' }} row">
                       <span class="col-sm-6">
-                        <input type="text" id="pickup-volunteer-name-{{$active_listing->id}}" name="pickup-volunteer-name"
-                                class="pickup-volunteer-name form-control"
-                                value="{{($active_listing->id == old('listing_id'))
-                                            ? old('volunteer_name')
-                                            : Auth::user()->first_name . ' ' . Auth::user()->last_name }}">
+
+                        <select id="pickup-volunteer-{{$active_listing->id}}" class="pickup-volunteer-name form-control" name="pickup-volunteer">
+                          <option value="">-- Избери --</option>
+                          @foreach ($volunteers as $volunteer)
+                            <option value="{{$volunteer->id}}" {{ ((old('listing_id') == $active_listing->id) && (old('volunteer') == $volunteer->id)) ? ' selected' : '' }}>{{$volunteer->first_name}} {{$volunteer->last_name}}</option>
+                          @endforeach
+                        </select>
                       </span>
-                      @if ((old('listing_id') == $active_listing->id) && ($errors->has('volunteer_name')))
-                     <span class="help-block listing-input-help-block pull-right">
-                         <strong>{{ $errors->first('volunteer_name') }}</strong>
-                     </span>
-                     @endif
-                    </div>
-                    <div class="col-xs-12 form-group {{ ((old('listing_id') == $active_listing->id) && ($errors->has('volunteer_phone'))) ? 'has-error' : '' }} row">
-                      <label class="col-sm-6" for="pickup-volunteer-phone">Број за контакт:</label>
                       <span class="col-sm-6">
-                        <input type="text" id="pickup-volunteer-phone-{{$active_listing->id}}" name="pickup-volunteer-phone"
-                              class="pickup-volunteer-phone form-control"
-                              value="{{($active_listing->id == old('listing_id'))
-                                          ? old('volunteer_phone')
-                                          : Auth::user()->phone }}">
+                        <button id="add-volunteer-button-{{$active_listing->id}}" type="button" name="add-volunteer-button-{{$active_listing->id}}"
+                                  class="btn btn-success add-volunteer-button" data-toggle="modal" data-target="#add-volunteer-popup">Додади волонтер</button>
                       </span>
-                      @if ((old('listing_id') == $active_listing->id) && ($errors->has('volunteer_phone')))
+                      @if ((old('listing_id') == $active_listing->id) && ($errors->has('volunteer')))
                      <span class="help-block listing-input-help-block pull-right">
-                         <strong>{{ $errors->first('volunteer_phone') }}</strong>
+                         <strong>{{ $errors->first('volunteer') }}</strong>
                      </span>
                      @endif
                     </div>
@@ -202,7 +172,7 @@
       @endif
   @endforeach
 
-  <!-- Modal -->
+  <!-- Confirm listing Modal -->
   <div id="confirm-listing-popup" class="modal fade" role="dialog">
     <div class="modal-dialog">
 
@@ -224,14 +194,6 @@
                 <span class="pull-right popup-element-label">Потребна количина:</span>
               </div>
               <div id="popup-quantity-needed-value" class="popup-quantity-needed-value popup-element-value col-xs-6">
-              </div>
-            </div>
-
-            <div id="popup-beneficiaries-no" class="popup-beneficiaries-no popup-element row">
-              <div class="popup-beneficiaries-no-label col-xs-6">
-                <span class="pull-right popup-element-label">За колку лица:</span>
-              </div>
-              <div id="popup-beneficiaries-no-value" class="popup-beneficiaries-no-value popup-element-value col-xs-6">
               </div>
             </div>
 
@@ -259,29 +221,112 @@
               </div>
             </div>
 
-            <div id="popup-volunteer-name" class="popup-volunteer-name popup-element row">
-              <div class="popup-volunteer-name-label col-xs-6">
-                <span class="pull-right popup-element-label">Име на волонтер:</span>
+            <div id="popup-volunteer" class="popup-volunteer popup-element row">
+              <div class="popup-volunteer-label col-xs-6">
+                <span class="pull-right popup-element-label">Волонтер:</span>
               </div>
-              <div id="popup-volunteer-name-value" class="popup-volunteer-name-value popup-element-value col-xs-6">
-              </div>
-            </div>
-
-            <div id="popup-volunteer-phone" class="popup-volunteer-phone popup-element row">
-              <div class="popup-volunteer-phone-label col-xs-6">
-                <span class="pull-right popup-element-label">Број за контакт:</span>
-              </div>
-              <div id="popup-volunteer-phone-value" class="popup-volunteer-phone-value popup-element-value col-xs-6">
+              <div id="popup-volunteer-value" class="popup-volunteer-value popup-element-value col-xs-6">
               </div>
             </div>
-
-
-
-
 
           </div>
           <div class="modal-footer">
             <input type="submit" name="submit-listing-popup" class="btn btn-primary" value="Прифати" />
+            <button type="button" class="btn btn-default" data-dismiss="modal">Откажи</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add volunteer Modal -->
+  <div id="add-volunteer-popup" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <form id="add-volunteer-form" class="add-volunteer-form" action="{{ route('cso.active_listings.add_volunteer') }}"
+              method="post" enctype="multipart/form-data">
+          {{ csrf_field() }}
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 id="popup-title" class="modal-title popup-title">Нов Волонтер</h4>
+          </div>
+          <div id="add-volunteer-body" class="modal-body add-volunteer-body">
+            <!-- Form content-->
+            <h5 id="popup-info" class="popup-info row italic">
+              Внесете ги податоците за волонтерот:
+            </h5>
+
+            <!-- first name -->
+            <div id="first-name-form-group" class="form-group row">
+              <label for="first_name" class="col-md-2 col-md-offset-2 control-label">Име:</label>
+              <div class="col-md-6">
+                <input id="first_name" type="text" class="form-control" name="first_name"
+                      {{-- value="" style="text-align: center;" required > --}}
+                      value="" style="text-align: center;" >
+                <span id="first-name-error" class="help-block" style="font-weight: bold;">
+                    <strong></strong>
+                </span>
+              </div>
+            </div>
+
+            <!-- last name -->
+            <div id="last-name-form-group" class="form-group row">
+              <label for="last_name" class="col-md-2 col-md-offset-2 control-label">Презиме:</label>
+              <div class="col-md-6">
+                <input id="last_name" type="text" class="form-control" name="last_name"
+                      value="" style="text-align: center;" >
+                      {{-- value="" style="text-align: center;" required > --}}
+                <span id="last-name-error" class="help-block" style="font-weight: bold;">
+                    <strong></strong>
+                </span>
+              </div>
+            </div>
+
+            <!-- email -->
+            <div id="email-form-group" class="form-group row">
+              <label for="email" class="col-md-2 col-md-offset-2 control-label">Емаил:</label>
+              <div class="col-md-6">
+                <input id="email" type="email" class="form-control" name="email"
+                      {{-- value="" style="text-align: center;" required > --}}
+                      value="" style="text-align: center;" >
+                <span id="email-error" class="help-block" style="font-weight: bold;">
+                    <strong></strong>
+                </span>
+              </div>
+            </div>
+
+            <!-- email -->
+            <div id="phone-form-group" class="form-group row">
+              <label for="phone" class="col-md-2 col-md-offset-2 control-label">Контакт:</label>
+              <div class="col-md-6">
+                <input id="phone" type="text" class="form-control" name="phone"
+                      value="" style="text-align: center;" >
+                      {{-- value="" style="text-align: center;" required > --}}
+                <span id="phone-error" class="help-block" style="font-weight: bold;">
+                    <strong></strong>
+                </span>
+              </div>
+            </div>
+
+            <!-- Upload image -->
+            <div id="image-form-group" class="form-group{{ $errors->has('image') ? ' has-error' : '' }} row">
+              <label for="image" class="col-md-2 col-md-offset-2 control-label">Слика</label>
+
+              <div class="col-md-6">
+                <input id="image" type="file" class="form-control" name="image" value="{{ old('image') }}">
+                <span id="image-error" class="help-block" style="font-weight: bold;">
+                    <strong></strong>
+                </span>
+              </div>
+            </div>
+
+          </div>
+          <div class="modal-footer">
+            {{-- <i id="popup-loading" class="fa fa-spinner fa-pulse fa-2x fa-fw"></i> --}}
+            <i id="popup-loading" class="popup-loading"></i>
+            <input type="submit" id="add-volunteer-popup-submit" name="add-volunteer-popup-submit" class="btn btn-primary" value="Прифати" />
             <button type="button" class="btn btn-default" data-dismiss="modal">Откажи</button>
           </div>
         </form>

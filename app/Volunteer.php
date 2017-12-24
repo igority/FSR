@@ -28,6 +28,7 @@ class Volunteer extends Authenticatable
         'phone',
         'image_id',
         'organization_id',
+        'added_by_user_id',
       ];
     /**
      * Get the location for this cso.
