@@ -9,5 +9,13 @@
       | If not, it will stay in the original size.
       |
       */
-    'max_profile_image_size' => '500'
+    'max_profile_image_size' => '500',
+      /*
+      | A listing offer from the cso can be deleted only after a certain time expires
+      | After that no deletion is possible.
+      | This parameter says how many HOURS before the listing expires all the offers
+      | for that listing cannot be deleted anymore.
+      |
+      */
+    'prevent_listing_delete_time' => '12',
 ];

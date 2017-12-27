@@ -97,7 +97,7 @@ class NewListingController extends Controller
                                                      ->withInput();
         }
 
-        $file_id = $this->handleUpload($request);
+        $file_id = $this->new_listing_handle_upload($request);
         $listing = $this->create($request->all(), $file_id);
 
         $csos = Cso::where('location_id', Auth::user()->location_id)->get();
@@ -106,6 +106,22 @@ class NewListingController extends Controller
         Notification::send($csos, new NewListing($listing));
 
         return back()->with('status', "Донацијата е додадена успешно!");
+    }
+
+    /**
+     * set information for image upload for adding new volunteer
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function new_listing_handle_upload(Request $request)
+    {
+        $input_name = 'image';
+        $purpose = 'listing image';
+        $for_user_type = 'donor';
+        $description = 'An uploaded image for a listing.';
+
+        return Methods::handleUpload($request, $input_name, $purpose, $for_user_type, $description);
     }
 
     /**
@@ -131,52 +147,6 @@ class NewListingController extends Controller
                 'listing_status' => 'active',
 
             ]);
-    }
-
-    /**
-     * handle the profile image upload.
-     *
-     * @param  Request $request
-     * @return int id of the uploaded image in the Files table
-     */
-    public function handleUpload(Request $request)
-    {
-        /*
-        show like this:
-        http://fsr.test/storage/upload/qovEHC3FJ70FEKwWdp202jz2qjwelB8evnTgqrPg.jpeg
-
-        */
-
-        //$id = $this->create($data)->id;
-        if ($request->hasFile('image')) {
-
-              //Methods::fitImage($request);
-            $file = $request->file('image');
-            $filename =$file->hashName();
-
-            $directory_path = storage_path('app/public' . config('app.upload_path'));
-            $file_path = $directory_path . '/' . $filename;
-
-            if (!file_exists($directory_path)) {
-                mkdir($directory_path, 666, true);
-            }
-            $img = Image::make($file);
-            Methods::fitImage($img);
-            $img->save($file_path);
-
-            $file_id = File::create([
-                  'path_to_file'  => config('app.upload_path'),
-                  'filename'      => $filename,
-                  'original_name' => $file->getClientOriginalName(),
-                  'extension'     => $file->getClientOriginalExtension(),
-                  'size'          => Storage::size('public' . config('app.upload_path') . '/' . $filename),
-                  'last_modified' => Storage::lastModified('public' . config('app.upload_path') . '/' . $filename),
-                  'purpose'       => 'listing image',
-                  'for_user_type' => 'donor',
-                  'description'   => 'An uploaded image for a listing.',
-              ])->id;
-            return $file_id;
-        }
     }
 
     /**

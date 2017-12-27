@@ -2,10 +2,10 @@
   <!-- Logo -->
   <a href="/" class="logo">
     <!-- mini logo for sidebar mini 50x50 pixels -->
-    <img class="logo-mini" src="../img/logo.png" />
+    <img class="logo-mini" src="{{url('img/logo.png')}}" />
     {{--<span class="logo-mini">{{ config('app.name', 'Laravel') }}</span>--}}
     <!-- logo for regular state and mobile devices -->
-    <img class="logo-lg" src="../img/logo.png" />
+    <img class="logo-lg" src="{{url('img/logo.png')}}" />
   <span class="logo-lg">{{ config('app.name', 'Laravel') }}</span>
   </a>
   <!-- Header Navbar: style can be found in header.less -->
@@ -35,7 +35,7 @@
                 <li><!-- start message -->
                   <a href="#">
                     <div class="pull-left">
-                      <img src="../img/user1-128x128.jpg" class="img-circle" alt="User Image">
+                      <img src="{{url('img/user1-128x128.jpg')}}" class="img-rounded" alt="User Image">
                     </div>
                     <h4>
                       Игор Пирковски
@@ -77,9 +77,9 @@
         <li class="dropdown user user-menu">
           <a href="#" class="dropdown-toggle" data-toggle="dropdown">
             @if (Auth::user()->profile_image_id == null)
-              <img src="../img/avatar5.png" class="user-image" alt="User Image">
+              <img src="{{url('img/avatar5.png')}}" class="user-image" alt="User Image">
             @elseif (FSR\File::find(Auth::user()->profile_image_id)->filename == null)
-              <img src="../img/avatar5.png" class="user-image" alt="User Image">
+              <img src="{{url('img/avatar5.png')}}" class="user-image" alt="User Image">
             @else
               <img src="{{FSR\Custom\Methods::getFileUrl(FSR\File::find(Auth::user()->profile_image_id)->filename)}}" class="user-image" alt="User Image">
             @endif
@@ -89,13 +89,14 @@
             <!-- User image -->
             <li class="user-header">
               @if (Auth::user()->profile_image_id == null)
-                <img src="../img/avatar5.png" class="img-circle" alt="User Image">
+                <img src="{{url('img/avatar5.png')}}" class="img-rounded" alt="User Image">
               @elseif (FSR\File::find(Auth::user()->profile_image_id)->filename == null)
-                <img src="../img/avatar5.png" class="img-circle" alt="User Image">
+                <img src="{{url('img/avatar5.png')}}" class="img-rounded" alt="User Image">
               @else
-                <img src="{{FSR\Custom\Methods::getFileUrl(FSR\File::find(Auth::user()->profile_image_id)->filename)}}" class="img-circle" alt="User Image">
+                <img src="{{FSR\Custom\Methods::getFileUrl(FSR\File::find(Auth::user()->profile_image_id)->filename)}}" class="img-rounded" alt="User Image">
               @endif
-              <p> {{Auth::user()->first_name}} {{Auth::user()->last_name}}
+              <p> {{Auth::user()->first_name}} {{Auth::user()->last_name}}<br>
+                  {{Auth::user()->organization->name}}
                 <small>{{Auth::user()->phone}}</small>
                 <small>{{Auth::user()->address}}</small>
               </p>
@@ -105,7 +106,7 @@
             <!-- Menu Footer-->
             <li class="user-footer">
               <div class="pull-left">
-                <a href="#" class="btn btn-default btn-flat">Профил</a>
+                <a href="/{{Auth::user()->type()}}/profile" class="btn btn-default btn-flat">Профил</a>
               </div>
               <div class="pull-right">
                 <a class="btn btn-default btn-flat" href="{{ route('logout') }}"

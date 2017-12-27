@@ -8,11 +8,14 @@
 require('./bootstrap');
 require('./register');
 require('./active_listings');
+require('./accepted_listings');
+require('./donor_my_active_listings');
+require('./volunteers');
 require('./new_listing');
 
 require('admin-lte');
-
-window.Vue = require('vue');
+//
+// window.Vue = require('vue');
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to

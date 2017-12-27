@@ -39,17 +39,17 @@
 
           <div id="listingbox{{$listing_offer->id}}" name="listingbox{{$listing_offer->id}}"></div>
           <!-- Default box -->
-          <div class="box listing-box listing-box-{{$listing_offer->id}} {{($listing_offer->id == old('listing_offer_id')) ? 'box-error' : 'collapsed-box' }}">
+          <div class="cso-accepted-listing-box box listing-box listing-box-{{$listing_offer->id}} {{($listing_offer->id == old('listing_offer_id')) ? 'box-error' : 'collapsed-box' }}">
             <div class="box-header with-border listing-box-header">
               <a href="#" class=" btn-box-tool listing-box-anchor" data-widget="collapse" data-toggle="tooltip" style="display: block;">
                 <div class="listing-image">
                   {{-- <img src="../img/avatar5.png" /> --}}
                   @if ($listing_offer->listing->image_id)
-                    <img class="img-circle" alt="{{$listing_offer->listing->product->food_type->name}}" src="../../storage{{config('app.upload_path') . '/' . FSR\File::find($listing_offer->listing->image_id)->filename}}" />
+                    <img class="img-rounded" alt="{{$listing_offer->listing->product->food_type->name}}" src="{{url('storage' . config('app.upload_path') . '/' . FSR\File::find($listing_offer->listing->image_id)->filename)}}" />
                   @elseif ($listing_offer->listing->product->food_type->default_image_id)
-                    <img class="img-circle" alt="{{$listing_offer->listing->product->food_type->name}}" src="{{$listing_offer->listing->product->food_type->default_image_id}}" />
+                    <img class="img-rounded" alt="{{$listing_offer->listing->product->food_type->name}}" src="{{url($listing_offer->listing->product->food_type->default_image_id)}}" />
                   @else
-                    <img class="img-circle" alt="{{$listing_offer->listing->product->food_type->name}}" src="../img/food_types/food-general.jpg" />
+                    <img class="img-rounded" alt="{{$listing_offer->listing->product->food_type->name}}" src="{{url('img/food_types/food-general.jpg')}}" />
                   @endif
 
                 </div>
@@ -83,9 +83,7 @@
                   </div>
                 </div>
                 <div class="box-tools pull-right">
-                  {{-- <button type="button" class="btn btn-box-tool"
-                          title="Collapse"> --}}
-                    <i class="fa fa-caret-down"></i></button>
+                    <i class="fa fa-caret-down"></i>
                 </div>
               </a>
             </div>
@@ -96,65 +94,47 @@
                     <span class="col-xs-12">Време за подигнување:</span>
                     <span class="col-xs-12" id="pickup-time-{{$listing_offer->id}}"><strong>од {{Carbon::parse($listing_offer->listing->pickup_time_from)->format('H:i')}} до {{Carbon::parse($listing_offer->listing->pickup_time_to)->format('H:i')}} часот</strong></span>
                   </div>
-                  <div class="col-md-3 col-sm-6 listing-food-type ">
+                  <div class="col-md-4 col-sm-6 listing-food-type ">
                     <span class="col-xs-12">Тип на храна:</span>
                     <span class="col-xs-12" id="food-type-{{$listing_offer->id}}"><strong>{{$listing_offer->listing->product->food_type->name}}</strong></span>
                   </div>
-                  <div class="col-md-5 col-sm-12 listing-description">
+                  <div class="col-md-4 col-sm-6 listing-volunteer ">
+                    <span class="col-xs-12">Волонтер:</span>
+                    <span class="col-xs-12" id="volunteer-{{$listing_offer->id}}"><strong>{{$listing_offer->volunteer->first_name}} {{$listing_offer->volunteer->last_name}}</strong></span>
+                    <div class="hidden" id="volunteer-id-{{$listing_offer->id}}">{{$listing_offer->volunteer->id}}</div>
+                    <button type="button" id="edit-volunteer-button-{{$listing_offer->id}}" name="edit-volunteer-button-{{$listing_offer->id}}"
+                      class="btn btn-success edit-volunteer-button" data-toggle="modal" data-target="#update-volunteer-popup">Промени волонтер</button>
+
+                  </div>
+                </div>
+                <hr>
+                <div class="row">
+                  <div class="col-xs-12 listing-description">
                     @if ($listing_offer->listing->description)
                       <span class="col-xs-12">Опис:</span>
                       <span class="col-xs-12" id="description-{{$listing_offer->id}}"><strong>{{$listing_offer->listing->description}}</strong></span>
                     @endif
                   </div>
                 </div>
-                <hr>
                 <div class="row">
-                  <!--
-                  <div class="col-md-12 listing-input-wrapper">
-                    <div class="panel col-xs-12" style="text-align: center;">Волонтер за подигнување</div>
-                    <div class="col-md-5 form-group {{ ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer'))) ? 'has-error' : '' }}">
-                      <label class="col-sm-6" for="pickup-volunteer-name">Име:</label>
-                      <span class="col-sm-6">
-                        <input type="text" id="pickup-volunteer-name-{{$listing_offer->id}}" name="pickup-volunteer-name"
-                                class="pickup-volunteer-name form-control"
-                                value="{{($listing_offer->id == old('lising_offer_id'))
-                                            ? old('volunteer_name')
-                                            : $listing_offer->volunteer->first_name . ' ' . $listing_offer->volunteer->last_name }}">
-                      </span>
-                      @if ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer_name')))
-                     <span class="help-block listing-input-help-block pull-right">
-                         <strong>{{ $errors->first('volunteer_name') }}</strong>
-                     </span>
-                     @endif
-                    </div>
-                    <div class="col-md-5 form-group {{ ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer_phone'))) ? 'has-error' : '' }}">
-                      <label class="col-sm-6" for="pickup-volunteer-phone">Број за контакт:</label>
-                      <span class="col-sm-6">
-                        <input type="text" id="pickup-volunteer-phone-{{$listing_offer->id}}" name="pickup-volunteer-phone"
-                              class="pickup-volunteer-phone form-control"
-                              value="{{($listing_offer->id == old('lising_offer_id'))
-                                          ? old('volunteer_phone')
-                                          : $listing_offer->volunteer_pickup_phone }}">
-                      </span>
-                      @if ((old('lising_offer_id') == $listing_offer->id) && ($errors->has('volunteer_phone')))
-                     <span class="help-block listing-input-help-block pull-right">
-                         <strong>{{ $errors->first('volunteer_phone') }}</strong>
-                     </span>
-                     @endif
-                    </div>
-                    <div class="col-md-2">
-                      <button type="button" id="update-volunteer-button-{{$listing_offer->id}}" name="update-volunteer-button-{{$listing_offer->id}}"
-                        class="btn btn-default btn-primary update-volunteer-button"
-                        data-toggle="modal" data-target="#update-volunteer-popup" update-volunteer-popup>Промени</button>
-                    </div>
-                  -->
+                  {{-- <div class="col-xs-12 listing-description">
+                    @if ($listing_offer->listing->description)
+                      <span class="col-xs-12">Коментари:</span>
+                      <span class="col-xs-12" id="description-{{$listing_offer->id}}"><strong>{{$listing_offer->listing->description}}</strong></span>
+                    @endif
+                  </div> --}}
                 </div>
               </div>
               <div class="box-footer text-center">
-                  <button type="button" id="delete-offer-button-{{$listing_offer->id}}" name="delete-offer-button-{{$listing_offer->id}}"
-                            class="btn btn-danger btn-lg delete-offer-button" data-toggle="modal" data-target="#delete-offer-popup">Избриши ја донацијата</button>
-                </div>
-              </div>
+                Messages
+                <hr>
+                @if (Carbon::parse($listing_offer->listing->date_expires)->addHours(config('constants.prevent_listing_delete_time')*(-1)) < Carbon::now())
+                  <button type="button" title="Прифатената донација не може да биде откажана бидејќи изминува наскоро!" id="delete-offer-button-{{$listing_offer->id}}" name="delete-offer-button-{{$listing_offer->id}}"
+                            class="btn btn-danger delete-offer-button pull-right" data-toggle="modal" data-target="#delete-offer-popup" disabled>Избриши ја донацијата</button>
+                @else
+                  <button type="button" title="Избриши ја донацијата" id="delete-offer-button-{{$listing_offer->id}}" name="delete-offer-button-{{$listing_offer->id}}"
+                            class="btn btn-danger delete-offer-button pull-right" data-toggle="modal" data-target="#delete-offer-popup">Избриши ја донацијата</button>
+                @endif              </div>
             </div>
             <!-- /.box-footer-->
           </div>
@@ -180,29 +160,27 @@
           <div id="update-volunteer-body" class="modal-body update-volunteer-body">
             <!-- Form content-->
             <h5 id="popup-info" class="popup-info row italic">
-              Проверете ги добро податоците и ако е во ред потврдете:
             </h5>
 
-            <div id="popup-volunteer-name" class="popup-volunteer-name popup-element row">
-              <div class="popup-volunteer-name-label col-xs-6">
-                <span class="pull-right popup-element-label">Име на волонтер:</span>
-              </div>
-              <div id="popup-volunteer-name-value" class="popup-volunteer-name-value popup-element-value col-xs-6">
+            <div id="popup-volunteer-wrapper" class="popup-volunteer-wrapper popup-element row">
+              <div class="popup-volunteer-element form-group col-xs-12">
+                <select id="popup-volunteer-select" class="popup-volunteer-select form-control" name="volunteer">
+                  @foreach (Auth::user()->organization->volunteers as $volunteer)
+                    @if ($volunteer->status == 'active')
+                      <option value="{{$volunteer->id}}">{{$volunteer->first_name}} {{$volunteer->last_name}}</option>
+                    @endif
+                  @endforeach
+                </select>
               </div>
             </div>
 
-            <div id="popup-volunteer-phone" class="popup-volunteer-phone popup-element row">
-              <div class="popup-volunteer-phone-label col-xs-6">
-                <span class="pull-right popup-element-label">Број за контакт:</span>
-              </div>
-              <div id="popup-volunteer-phone-value" class="popup-volunteer-phone-value popup-element-value col-xs-6">
-              </div>
-            </div>
           </div>
           <div class="modal-footer">
-            <input type="submit" name="update-volunteer-popup" class="btn btn-primary" value="Прифати" />
+            <i id="popup-loading" class="popup-loading"></i>
+            <input type="submit" id="update-volunteer-popup-submit" name="update-volunteer-popup-submit" class="btn btn-success" value="Промени" />
             <button type="button" class="btn btn-default" data-dismiss="modal">Откажи</button>
           </div>
+          <input type="hidden" id="popup-hidden-listing-id" name="listing_offer_id" value="">
         </form>
       </div>
     </div>

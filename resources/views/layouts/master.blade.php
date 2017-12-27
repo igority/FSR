@@ -36,7 +36,7 @@
     <div class="pull-right hidden-xs">
       <b>Верзија</b> {{config('app.version')}}
     </div>
-    <strong>Copyright &copy; 2018 <a href="https://ajdemakedonija.mk">Ајде Македонија</a>.</strong> Сите права се задржани.
+    <strong>Copyright &copy; {{date('Y')}} <a href="https://ajdemakedonija.mk">Ајде Македонија</a>.</strong> Сите права се задржани.
   </footer>
 
 {{-- @include('layouts.elements.control-sidebar') --}}

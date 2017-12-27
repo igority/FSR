@@ -6,15 +6,16 @@
     <div class="user-panel">
       <div class="pull-left image">
         @if (Auth::user()->profile_image_id == null)
-          <img src="../img/avatar5.png" class="img-circle" alt="User Image">
+          <img src="{{url('img/avatar5.png')}}" class="img-rounded" alt="User Image">
         @elseif (FSR\File::find(Auth::user()->profile_image_id)->filename == null)
-          <img src="../img/avatar5.png" class="img-circle" alt="User Image">
+          <img src="{{url('img/avatar5.png')}}" class="img-rounded" alt="User Image">
         @else
-          <img src="{{FSR\Custom\Methods::getFileUrl(FSR\File::find(Auth::user()->profile_image_id)->filename)}}" class="img-circle" alt="User Image">
+          <img src="{{FSR\Custom\Methods::getFileUrl(FSR\File::find(Auth::user()->profile_image_id)->filename)}}" class="img-rounded" alt="User Image">
         @endif
       </div>
       <div class="pull-left info">
         <p>{{Auth::user()->email}}</p>
+        <p><small>{{Auth::user()->organization->name}}</small></p>
       </div>
     </div>
 
@@ -42,14 +43,6 @@
           </a>
         </li>
 
-        <li>
-          <a href="/{{Auth::user()->type()}}/my_accepted_listings">
-            <i class="fa fa-bookmark"></i> <span> Прифатени донации</span>
-            <span class="pull-right-container">
-              <small class="label pull-right bg-blue">2</small>
-            </span>
-          </a>
-        </li>
 
         <li>
           <a href="/{{Auth::user()->type()}}/new_listing">
@@ -96,6 +89,35 @@
         </a>
       </li>
 
+      @if (Auth::user()->type() == 'cso')
+        <li class="treeview">
+            <a href="#">
+              <i class="fa fa-universal-access"></i> <span>Волонтери</span>
+              <span class="pull-right-container">
+                <i class="fa fa-angle-left pull-right"></i>
+              </span>
+            </a>
+            <ul class="treeview-menu">
+              <li>
+                <a href="/{{Auth::user()->type()}}/volunteers">
+                  <i class="fa fa-users"></i> <span>Преглед</span>
+                  <span class="pull-right-container">
+                  </span>
+                </a>
+              </li>
+
+              <li>
+                <a href="/{{Auth::user()->type()}}/volunteers/new">
+                  <i class="fa fa-user-plus"></i> <span>Додади нов</span>
+                  <span class="pull-right-container">
+                  </span>
+                </a>
+              </li>
+
+            </ul>
+        </li>
+      @endif
+
       <li class="treeview">
           <a href="#">
             <i class="fa fa-dashboard"></i> <span>Подесувања</span>
@@ -105,7 +127,7 @@
           </a>
           <ul class="treeview-menu">
             <li>
-              <a href="#">
+              <a href="/{{Auth::user()->type()}}/profile">
                 <i class="fa fa-user-circle"></i> <span>Мој профил</span>
                 <span class="pull-right-container">
                 </span>

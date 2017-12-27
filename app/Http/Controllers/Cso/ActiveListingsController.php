@@ -38,9 +38,9 @@ class ActiveListingsController extends Controller
 
         //  $active_listings = Listing::where('listing_status', 'active');
         $active_listings = Listing::where('date_expires', '>', Carbon::now()->format('Y-m-d H:i'))
-                                  ->where('date_listed', '<=', Carbon::now()->format('Y-m-d H:i'))
-                                  ->where('listing_status', 'active')
-                                  ->orderBy('date_expires', 'ASC');
+            ->where('date_listed', '<=', Carbon::now()->format('Y-m-d H:i'))
+            ->where('listing_status', 'active')
+            ->orderBy('date_expires', 'ASC');
 
         $listing_offers = ListingOffer::where('offer_status', 'active')->get();
         //$listing_offers = ListingOffer::all();
@@ -57,13 +57,14 @@ class ActiveListingsController extends Controller
             }
         }
 
-        $volunteers = Volunteer::where('organization_id', Auth::user()->organization_id)->get();
+        $volunteers = Volunteer::where('organization_id', Auth::user()->organization_id)
+                               ->where('status', 'active')->get();
 
         return view('cso.active_listings')->with([
-          'active_listings' => $active_listings,
-          'listing_offers' => $listing_offers,
-          'active_listings_no' => $active_listings_no,
-          'volunteers' => $volunteers,
+            'active_listings' => $active_listings,
+            'listing_offers' => $listing_offers,
+            'active_listings_no' => $active_listings_no,
+            'volunteers' => $volunteers,
         ]);
     }
 
@@ -82,7 +83,7 @@ class ActiveListingsController extends Controller
 
         if ($validation->fails()) {
             return redirect($route)->withErrors($validation->errors())
-                                   ->withInput();
+                ->withInput();
         }
 
         // $csos = Cso::where('location_id', Auth::user()->location_id)
@@ -104,13 +105,13 @@ class ActiveListingsController extends Controller
      */
     protected function create(array $data)
     {
-        return  ListingOffer::create([
-                'cso_id' => Auth::user()->id,
-                'listing_id' => $data['listing_id'],
-                'offer_status' => 'active',
-                'quantity' => $data['quantity'],
-                'volunteer_id' => $data['volunteer'],
-            ]);
+        return ListingOffer::create([
+            'cso_id' => Auth::user()->id,
+            'listing_id' => $data['listing_id'],
+            'offer_status' => 'active',
+            'quantity' => $data['quantity'],
+            'volunteer_id' => $data['volunteer'],
+        ]);
     }
 
     /**
@@ -125,14 +126,16 @@ class ActiveListingsController extends Controller
         $listing_offers = $listing->listing_offers;
         $quantity_counter = 0;
         foreach ($listing_offers as $listing_offer) {
-            $quantity_counter += $listing_offer->quantity;
+            if ($listing_offer->offer_status == 'active') {
+                $quantity_counter += $listing_offer->quantity;
+            }
         }
         $max_quantity = $listing->quantity - $quantity_counter;
 
         $validatorArray = [
-            'listing_id'         => 'required',
-            'quantity'           => 'required|numeric|min:1|max:' . $max_quantity,
-            'volunteer'          => 'required',
+            'listing_id' => 'required',
+            'quantity' => 'required|numeric|min:1|max:' . $max_quantity,
+            'volunteer' => 'required',
         ];
 
         return Validator::make($data, $validatorArray);
@@ -153,59 +156,29 @@ class ActiveListingsController extends Controller
             return response()->json(['errors' => $validation->errors()]);
         }
 
-        $file_id = $this->handleUploadAjax($request);
+        $file_id = $this->handle_upload_ajax($request);
         $volunteer = $this->create_volunteer($request->all(), $file_id);
 
         //  Notification::send($csos, new NewListing($listing));
-
-        return "ok";
+        return response()->json(['id' => $volunteer->id]);
     }
 
     /**
-     * handle the profile image upload.
+     * set information for image upload for adding new volunteer through ajax
      *
-     * @param  Request $request
-     * @return int id of the uploaded image in the Files table
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function handleUploadAjax(Request $request)
+    protected function handle_upload_ajax(Request $request)
     {
-        /*
-        show like this:
-        http://fsr.test/storage/upload/qovEHC3FJ70FEKwWdp202jz2qjwelB8evnTgqrPg.jpeg
+        $input_name = 'image';
+        $purpose = 'volunteer image';
+        $for_user_type = 'cso';
+        $description = 'An uploaded image for added volunteer with ajax through popup in active listings.';
 
-        */
-
-        //$id = $this->create($data)->id;
-        if ($request->hasFile('image')) {
-
-              //Methods::fitImage($request);
-            $file = $request->file('image');
-            $filename =$file->hashName();
-
-            $directory_path = storage_path('app/public' . config('app.upload_path'));
-            $file_path = $directory_path . '/' . $filename;
-
-            if (!file_exists($directory_path)) {
-                mkdir($directory_path, 666, true);
-            }
-            $img = Image::make($file);
-            Methods::fitImage($img);
-            $img->save($file_path);
-
-            $file_id = File::create([
-                  'path_to_file'  => config('app.upload_path'),
-                  'filename'      => $filename,
-                  'original_name' => $file->getClientOriginalName(),
-                  'extension'     => $file->getClientOriginalExtension(),
-                  'size'          => Storage::size('public' . config('app.upload_path') . '/' . $filename),
-                  'last_modified' => Storage::lastModified('public' . config('app.upload_path') . '/' . $filename),
-                  'purpose'       => 'volunteer image',
-                  'for_user_type' => 'cso',
-                  'description'   => 'An uploaded image for added volunteer.',
-              ])->id;
-            return $file_id;
-        }
+        return Methods::handleUpload($request, $input_name, $purpose, $for_user_type, $description);
     }
+
 
     /**
      * Create a new user instance after a valid registration.
@@ -215,15 +188,15 @@ class ActiveListingsController extends Controller
      */
     protected function create_volunteer(array $data, $file_id)
     {
-        return  Volunteer::create([
-                    'first_name' =>  $data['first_name'],
-                    'last_name' => $data['last_name'],
-                    'phone' => $data['phone'],
-                    'email' => $data['email'],
-                    'image_id' => $file_id,
-                    'organization_id' => Auth::user()->organization_id,
-                    'added_by_user_id' => Auth::user()->id,
-                ]);
+        return Volunteer::create([
+            'first_name' => $data['first_name'],
+            'last_name' => $data['last_name'],
+            'phone' => $data['phone'],
+            'email' => $data['email'],
+            'image_id' => $file_id,
+            'organization_id' => Auth::user()->organization_id,
+            'added_by_user_id' => Auth::user()->id,
+        ]);
     }
 
 
@@ -236,13 +209,25 @@ class ActiveListingsController extends Controller
     protected function validator_volunteer(array $data)
     {
         $validatorArray = [
-                    'first_name'        => 'required',
-                    'last_name'         => 'required',
-                    'phone'             => 'required',
-                    'email'             => 'required|string|email|max:255',
-                    'image'             => 'image|max:2048',
-                ];
+            'first_name' => 'required',
+            'last_name' => 'required',
+            'phone' => 'required',
+            'email' => 'required|string|email|max:255',
+            'image' => 'image|max:2048',
+        ];
 
         return Validator::make($data, $validatorArray);
+    }
+
+    /**
+     * Handle post request. Get volunteers with ajax
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function get_volunteers(Request $request)
+    {
+        return Volunteer::where('organization_id', Auth::user()->organization_id)
+                        ->where('status', 'active')->get();
     }
 }

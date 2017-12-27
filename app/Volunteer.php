@@ -29,6 +29,8 @@ class Volunteer extends Authenticatable
         'image_id',
         'organization_id',
         'added_by_user_id',
+        'status',
+        'is_user',
       ];
     /**
      * Get the location for this cso.

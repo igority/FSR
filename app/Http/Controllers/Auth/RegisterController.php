@@ -69,7 +69,7 @@ class RegisterController extends Controller
         $this->validator($request->all())->validate();
 
         //  DB::transaction(function(Request $request) {
-        $file_id = $this->handleUpload($request);
+        $file_id = $this->register_handle_upload($request);
         event(new Registered($user = $this->create($request->all(), $file_id)));
         //  });
         $request->session()->put('status', Lang::get('login.not_approved'));
@@ -171,50 +171,20 @@ class RegisterController extends Controller
       }
     }
 
+
     /**
-     * handle the profile image upload.
+     * set information for image upload for registering new user
      *
-     * @param  Request $request
-     * @return int id of the uploaded image in the Files table
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
      */
-    public function handleUpload(Request $request)
+    protected function register_handle_upload(Request $request)
     {
-        /*
-        show like this:
-        http://fsr.test/storage/upload/qovEHC3FJ70FEKwWdp202jz2qjwelB8evnTgqrPg.jpeg
+        $input_name = 'profile_image';
+        $purpose = 'profile image';
+        $for_user_type = $request->all()['type'];
+        $description = 'Profile image for a ' . $request->all()['type'] . ' uploaded when registering.';
 
-        */
-
-        //$id = $this->create($data)->id;
-        if ($request->hasFile('profile_image')) {
-
-              //Methods::fitImage($request);
-            $file = $request->file('profile_image');
-            $filename =$file->hashName();
-
-            $directory_path = storage_path('app/public' . config('app.upload_path'));
-            $file_path = $directory_path . '/' . $filename;
-
-            if (!file_exists($directory_path)) {
-                mkdir($directory_path, 666, true);
-            }
-            $img = Image::make($file);
-            Methods::fitImage($img);
-            $img->save($file_path);
-
-            $file_id = File::create([
-                  'path_to_file'  => config('app.upload_path'),
-                  'filename'      => $filename,
-                  'original_name' => $file->getClientOriginalName(),
-                  'extension'     => $file->getClientOriginalExtension(),
-                  'size'          => Storage::size('public' . config('app.upload_path') . '/' . $filename),
-                  'last_modified' => Storage::lastModified('public' . config('app.upload_path') . '/' . $filename),
-                  'purpose'       => 'profile_image',
-                  'for_user_type' => $request->all()['type'],
-                  'description'   => 'Profile image for a ' . $request->all()['type'] . ' uploaded when registering.',
-              ])->id;
-
-            return $file_id;
-        }
+        return Methods::handleUpload($request, $input_name, $purpose, $for_user_type, $description);
     }
 }

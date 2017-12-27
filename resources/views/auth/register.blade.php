@@ -128,7 +128,7 @@
               <label for="first_name" class="col-md-4 control-label">@lang('register.first_name')</label>
 
               <div class="col-md-6">
-                <input id="first_name" type="text" class="form-control" name="first_name" value="{{ old('first_name') }}" {{ (!old('type')) ? ' disabled' : '' }}>
+                <input id="first_name" type="text" class="form-control" name="first_name" value="{{ old('first_name') }}" {{ (!old('type')) ? ' disabled' : '' }} required>
                 @if ($errors->has('first_name'))
                 <span class="help-block">
                     <strong>{{ $errors->first('first_name') }}</strong>
@@ -141,7 +141,7 @@
               <label for="last_name" class="col-md-4 control-label">@lang('register.last_name')</label>
 
               <div class="col-md-6">
-                <input id="last_name" type="text" class="form-control" name="last_name" value="{{ old('last_name') }}" {{ (!old('type')) ? ' disabled' : '' }}>
+                <input id="last_name" type="text" class="form-control" name="last_name" value="{{ old('last_name') }}" {{ (!old('type')) ? ' disabled' : '' }} required>
                 @if ($errors->has('last_name'))
                 <span class="help-block">
                     <strong>{{ $errors->first('last_name') }}</strong>
@@ -154,7 +154,7 @@
               <label for="address" class="col-md-4 control-label">@lang('register.address')</label>
 
               <div class="col-md-6">
-                <input id="address" type="text" class="form-control" name="address" value="{{ old('address') }}" {{ (!old('type')) ? ' disabled' : '' }}>
+                <input id="address" type="text" class="form-control" name="address" value="{{ old('address') }}" {{ (!old('type')) ? ' disabled' : '' }} required>
                 @if ($errors->has('address'))
                 <span class="help-block">
                     <strong>{{ $errors->first('address') }}</strong>
@@ -167,7 +167,7 @@
               <label for="phone" class="col-md-4 control-label">@lang('register.phone')</label>
 
               <div class="col-md-6">
-                <input id="phone" type="tel" class="form-control" name="phone" value="{{ old('phone') }}" {{ (!old('type')) ? ' disabled' : '' }}>
+                <input id="phone" type="tel" class="form-control" name="phone" value="{{ old('phone') }}" {{ (!old('type')) ? ' disabled' : '' }} required>
                 @if ($errors->has('phone'))
                 <span class="help-block">
                     <strong>{{ $errors->first('phone') }}</strong>

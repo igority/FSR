@@ -3,6 +3,9 @@
 namespace FSR\Custom;
 
 use FSR\Cso;
+use FSR\File;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Intervention\Image\ImageManagerStatic as Image;
 
@@ -20,7 +23,7 @@ class Methods
  * @param bool $absolute    - if specified, returns an absolute path. If not, relative
  * @return string
  */
-    public static function getFileUrl(string $filename, bool $absolute = false)
+    public static function getFileUrl(string $filename, bool $absolute = true)
     {
         $path = '';
 
@@ -82,5 +85,57 @@ class Methods
     public static function convert_date_input_to_db($date)
     {
         return str_replace('T', ' ', $date);
+    }
+
+    /**
+     * handle the volunteer image upload.
+     *
+     * @param  Request $request
+     * @param  string $input_name
+     * @param  string $purpose = ''
+     * @param  string $for_user_type = ''
+     * @param  string $description = ''
+     * @return int id of the uploaded image in the Files table
+     */
+    public static function handleUpload(Request $request, string $input_name, string $purpose = '', string $for_user_type = '', string $description = '')
+    {
+        /*
+        show like this:
+        http://fsr.test/storage/upload/qovEHC3FJ70FEKwWdp202jz2qjwelB8evnTgqrPg.jpeg
+
+        */
+
+        //$id = $this->create($data)->id;
+        if ($request->hasFile($input_name)) {
+
+                  //Methods::fitImage($request);
+            $file = $request->file($input_name);
+            $filename =$file->hashName();
+
+            $directory_path = storage_path('app/public' . config('app.upload_path'));
+            $file_path = $directory_path . '/' . $filename;
+
+            if (!file_exists($directory_path)) {
+                mkdir($directory_path, 666, true);
+            }
+            $img = Image::make($file);
+            Methods::fitImage($img);
+            $img->save($file_path);
+
+            $file_id = File::create([
+                      'path_to_file'  => config('app.upload_path'),
+                      'filename'      => $filename,
+                      'original_name' => $file->getClientOriginalName(),
+                      'extension'     => $file->getClientOriginalExtension(),
+                      'size'          => Storage::size('public' . config('app.upload_path') . '/' . $filename),
+                      'last_modified' => Storage::lastModified('public' . config('app.upload_path') . '/' . $filename),
+                      'purpose'       => $purpose,
+                      'for_user_type' => $for_user_type,
+                      'description'   => $description,
+                  ])->id;
+            return $file_id;
+        } else {
+            return null;
+        }
     }
 }

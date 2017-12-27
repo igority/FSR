@@ -73,12 +73,12 @@ class AcceptedListingsController extends Controller
     {
 
     //
-        if ($request->has('update-volunteer-popup')) {
-            return $this->handle_update_volunteer($request);
-        } elseif ($request->has('delete-offer-popup')) {
-            return $this->handle_delete_offer($request);
-        }
-        return 0;
+        // if ($request->has('update-volunteer-popup')) {
+        //     return $this->handle_update_volunteer($request);
+        // } elseif ($request->has('delete-offer-popup')) {
+        return $this->handle_delete_offer($request);
+        // }
+        // return 0;
 
         // $validation = $this->validator($request->all());
         //
@@ -99,50 +99,22 @@ class AcceptedListingsController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function handle_update_volunteer(Request $request)
+    public function update_volunteer(Request $request)
     {
-        $validation = $this->validator($request->all());
-
-        $route = route('cso.accepted_listings') . '#listingbox' . $request->all()['listing_offer_id'];
-
-        if ($validation->fails()) {
-            return redirect($route)->withErrors($validation->errors())
-                                 ->withInput();
-        }
-        $listing_offer = $this->update($request->all());
-        return back()->with('status', "Волонтерот е успешно променет!");
-    }
-
-    /**
-     * Updates the selected listing offer
-     *
-     * @param  array  $data
-     * @return \FSR\ListingOffer
-     */
-    protected function update(array $data)
-    {
+        // $validation = $this->validator($request->all());
+        //
+        // if ($validation->fails()) {
+        //     return redirect($route)->withErrors($validation->errors())
+        //                          ->withInput();
+        // }
+        $data = $request->all();
         $listing_offer = ListingOffer::find($data['listing_offer_id']);
-        $listing_offer->volunteer_pickup_name = $data['volunteer_name'];
-        $listing_offer->volunteer_pickup_phone = $data['volunteer_phone'];
+        $listing_offer->volunteer_id = $data['volunteer'];
         $listing_offer->save();
-        return $listing_offer;
+
+        return response()->json(['listing-offer-id' => $listing_offer->id]);
     }
 
-    /**
-     * Get a validator for an incoming listing offer input request.
-     *
-     * @param  array  $data
-     * @return \Illuminate\Contracts\Validation\Validator
-     */
-    protected function validator(array $data)
-    {
-        $validatorArray = [
-            'volunteer_name'     => 'required',
-            'volunteer_phone'    => 'required',
-        ];
-
-        return Validator::make($data, $validatorArray);
-    }
 
     /**
      * Handle offer listing "delete". (it is actually update)
@@ -168,5 +140,27 @@ class AcceptedListingsController extends Controller
         $listing_offer->offer_status = 'cancelled';
         $listing_offer->save();
         return $listing_offer;
+    }
+
+    /**
+     * Open a single listing offer page
+     *
+     * @param  Request  $request
+     * @param  int  $listing_offer_id
+     * @return \Illuminate\Http\Response
+     */
+    public function single_accepted_listing(Request $request, int $listing_offer_id)
+    {
+        $listing_offer = ListingOffer::where('offer_status', 'active')
+                                   ->where('cso_id', Auth::user()->id)
+                                   ->whereHas('listing', function ($query) {
+                                       $query->where('date_expires', '>', Carbon::now()->format('Y-m-d H:i'))
+                                            ->where('date_listed', '<=', Carbon::now()->format('Y-m-d H:i'))
+                                            ->where('listing_status', 'active');
+                                   })->find($listing_offer_id);
+
+        return view('cso.single_accepted_listing')->with([
+        'listing_offer' => $listing_offer,
+      ]);
     }
 }

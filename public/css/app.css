@@ -20205,6 +20205,7 @@ button.close {
 
 .listing-image {
   float: left;
+  padding-right: 10px;
 }
 
 .listing-image img {
@@ -20212,12 +20213,20 @@ button.close {
 }
 
 .header-wrapper {
-  margin-left: 80px;
+  margin-left: 90px;
 }
 
 .listing-title {
   text-align: center;
   font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.donor-listing-title-panel {
+  margin-bottom: 0px;
+}
+
+.donor-accepted-header-element {
   margin-bottom: 10px;
 }
 
@@ -20279,5 +20288,91 @@ button.close {
 
 .help-block {
   font-size: 12px;
+}
+
+.edit-volunteer-button {
+  margin-right: 10px;
+}
+
+.cso-accepted-listing-box {
+  background: #b6f7cd;
+}
+
+.cso-active-listing-box {
+  /*  background: #ffdede; */
+  background: #cde4f6;
+}
+
+.donor-my-active-listings-box {
+  background: #cde4f6;
+}
+
+.donor-listing-box-header {
+  padding-bottom: 10px;
+}
+
+.donor-listing-offer-button {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.volunteer-image-wrapper {
+  /*  width: 150px; */
+}
+
+.volunteer-image-wrapper img {
+  width: 100%;
+  max-width: 225px;
+}
+
+.profile-info {
+  margin-top: 15px;
+}
+
+.profile-image img,
+.volunteer-image img {
+  width: 100%;
+  max-width: 225px;
+}
+
+#edit-profile-form input#profile-image,
+#edit-volunteer-form input#volunteer-image {
+  max-width: 225px;
+}
+
+.volunteer-listing-title {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.volunteer-image-preview {
+  float: left;
+  margin-right: 10px;
+}
+
+.volunteer-image-preview img {
+  width: 50px;
+}
+
+.volunteer-info-wrapper {
+  margin-top: 30px;
+  font-size: 16px;
+}
+
+.volunteer-image-preview {
+  margin-bottom: 10px;
+}
+
+.volunteer-box {
+  margin-bottom: 10px;
+}
+
+.section-wrapper {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+.volunteer-box-body-wrapper {
+  padding-top: 20px;
 }
 
